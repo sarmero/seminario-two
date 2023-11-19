@@ -1,0 +1,16 @@
+.title {
+  height: 40px;
+  background: linear-gradient(90deg, #fff 21.1%, #2657a4 48.99%, #fff 76.87%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+  color: #fff;
+}
+
+.cont {
+    margin-top: 150px;
+    padding: 0 70px 0 70px;
+    margin-bottom: 100px;
+    position: relative;
+  }

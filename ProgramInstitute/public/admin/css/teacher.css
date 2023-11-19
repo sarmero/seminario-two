@@ -1,0 +1,19 @@
+.container .cont-p {
+  margin-top: 50px;
+  min-height: 450px;
+  margin-bottom: 100px;
+}
+
+.container .cont-p .title {
+  background: linear-gradient(90deg, #fff 21.1%, #2657a4 48.99%, #fff 76.87%);
+  text-align: center;
+}
+
+.container .cont-p .title .tit {
+  color: #fff;
+  font-family: Inter;
+  font-size: 22px;
+}
+.container .cont-p .table-responsive {
+  margin-top: 20px;
+}

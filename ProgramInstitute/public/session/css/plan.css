@@ -1,0 +1,37 @@
+.container .content {
+  padding: 50px;
+  min-height: 600px;
+}
+
+.content .item .title {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 5px;
+  font-size: 16px;
+  font-family: Inter;
+  color: var(--Black, #060e1a);
+}
+
+.content .item .cont {
+  border: 1px solid #51565e66;
+  border-radius: 15px;
+  padding: 5px 20px 5px 25px;
+  display: flex;
+  flex-direction: column;
+}
+
+.content .item {
+  padding: 10px 40px 10px 40px;
+}
+
+.content .item .subject {
+  font-family: Inter;
+  color: #51565e;
+  font-size: 14px;
+}
+
+hr {
+  height: 1px;
+  margin: 1px 0 5px 0;
+}

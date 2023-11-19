@@ -1,0 +1,35 @@
+body{
+    background-image: url('../../image/profile/cover.jpg');
+}
+
+.container .cont-p{
+    min-height: 450px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 100px;
+}
+
+.container .cont-p .text{
+    font-family: Inter;
+    text-align: center;
+
+}
+
+.container .cont-p img{
+    width: 100px;
+    height: 100px;
+}
+
+.container .cont-p .wlc{
+    font-size: 30px;
+    color: #9932cc;
+
+}
+
+.container .cont-p .name{
+    font-size: 50px;
+    color: #00008b;
+
+}

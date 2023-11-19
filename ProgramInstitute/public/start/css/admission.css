@@ -1,0 +1,36 @@
+.message{
+  margin-top: 100px;
+  margin-bottom: 50px;
+  padding-left: 100px;
+  padding-right: 100px;
+}
+
+p {
+  color: var(--Pragraph, #51565e);
+  font-family: Inter;
+  font-size: 12px;
+  font-style: normal;
+  text-align: justify;
+}
+
+
+.id{
+    display: flex;
+    flex-direction: row;
+    width: 400px;
+    gap: 10px;
+}
+
+.text{
+    padding: 40px;
+    margin-top: 10px;
+    border-radius: 15px;
+    background: rgba(217, 217, 217, 0.50);
+    min-height: 400px;
+}
+
+.id input{
+    border-radius: 10px;
+}
+
+

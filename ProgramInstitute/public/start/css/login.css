@@ -1,0 +1,9 @@
+.card{
+    margin: 150px 0 100px 0;
+}
+
+.card-header{
+    background: linear-gradient(90deg,  #2657a4 48.99%, #fff 76.87%);
+    color: #FFF;
+    font-family: Inter;
+}

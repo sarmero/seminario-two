@@ -1,0 +1,55 @@
+.container .cont-p {
+  margin-top: 50px;
+  min-height: 450px;
+  margin-bottom: 100px;
+  padding: 0 70px 0 70px;
+}
+
+.container .cont-p .title {
+  background: linear-gradient(90deg, #fff 21.1%, #2657a4 48.99%, #fff 76.87%);
+  text-align: center;
+}
+
+.container .cont-p .title .tit {
+  color: #fff;
+  font-family: Inter;
+  font-size: 22px;
+}
+
+.container .cont-p .detail {
+  border-radius: 20px;
+  background-color: #d9d9d9;
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid #b25d0f;
+}
+
+.container .cont-p .detail .person {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.container .cont-p .detail .inf .item {
+  font-size: 12px;
+  font-family: Inter;
+  color: #b25d0f;
+  font-weight: bold;
+}
+
+.container .cont-p .detail .inf .descip {
+  font-size: 16px;
+  font-family: Inter;
+  font-weight: bold;
+}
+
+.container .cont-p .detail .image{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container .cont-p .detail .image img{
+    border-radius: 10px;
+    border: 1px solid #b25d0f;
+}

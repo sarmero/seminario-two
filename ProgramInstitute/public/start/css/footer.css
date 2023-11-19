@@ -1,0 +1,88 @@
+footer {
+  background-image: url('../../image/footer/footer.png');
+}
+
+.red {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.item1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#image {
+  width: 108.167px;
+  height: 94.782px;
+  flex-shrink: 0;
+}
+
+.item2 {
+  display: flex;
+  flex-direction: column;
+  margin-top: 22px;
+  gap: 3px;
+}
+
+footer h5 {
+  font-family: Inter;
+  font-size: 18px;
+  font-style: normal;
+  color: #e1efff;
+}
+
+.item2 h3 {
+    margin-top: 7px;
+}
+
+.item2 h3, .item3 h3, .item4 h3{
+  font-family: Inter;
+  font-size: 12px;
+  font-style: normal;
+  color: #fee7b9;
+}
+
+.item2 .contacto {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  gap: 10px;
+}
+
+.item3, .item4{
+    margin-top: 24px;
+}
+
+.item3{
+    margin-left: 20px;
+}
+
+.item4 h3{
+    margin-top:20px;
+}
+
+.item4{
+    gap: 10px;
+}
+
+.emailcli{
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+}
+
+.emailcli input{
+    border-radius: 6px;
+    border-color: blue;
+}
+
+footer p{
+    color:#FFFFFF;
+    font-size: small;
+}

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class person extends Model
 {
@@ -22,20 +24,36 @@ class person extends Model
         'photo',
     ];
 
-    public function contatac()
+    public function contatac(): BelongsTo
     {
-        return $this->hasOne(Contact::class);
+        return $this->belongsTo(Contact::class);
     }
 
-    public function admission()
+    public function admission(): HasOne
     {
         return $this->hasOne(Admission::class);
     }
 
-    public function district()
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class);
+    }
+
+    public function teacher(): HasOne
+    {
+        return $this->hasOne(Teacher::class);
+    }
+
+    public function district(): BelongsTo
     {
         return $this->belongsTo(District::class);
     }
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+  
 }
 
 

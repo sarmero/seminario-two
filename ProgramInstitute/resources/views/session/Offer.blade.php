@@ -2,6 +2,7 @@
 
 @section('style')
     <link rel="stylesheet" href="{{ asset('session/css/offer.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @endsection
 
 @section('title')
@@ -24,6 +25,7 @@
 
             <hr>
 
+
             @foreach ($offer as $of)
                 <div class="item">
                     <div class="cont">
@@ -39,11 +41,35 @@
                     </div>
 
                     <div class="action">
-                        <button type="submit" class="btn btn-primary btn-sm">Inscribir</button>
+                        <a href="#" role="button" class="btn btn-primary btn-sm" onclick="inscription('{{ $of->id }}')" >Inscribir</a>
                     </div>
                 </div>
             @endforeach
-            
+
+
         </div>
     </div>
+
+    <script>
+        function inscription(id) {
+            if (confirm('¿Estás seguro de que quieres inscribir esta Asignatura?')) {
+                $.ajax({
+                    type: 'GET',
+                    url: '/users/offer/inscription',
+                    data: { id: id },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        window.location.href = '/users/offer';
+                    },
+                    error: function(error) {
+                        console.error('Error en la solicitud Ajax:', error);
+                    }
+                });
+            }
+        }
+    </script>
+
 @endsection

@@ -26,7 +26,29 @@
                     </div>
                 </li>
 
-                <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Ingresar</a></li>
+                @if (Auth::check())
+                    <a id="navbarDropdown" class=" dropdown-toggle" href="#" role="button"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                        @if (session('photo'))
+                            <img src="{{ asset(session('photo')) }}" alt="user" width="15" height="15"
+                                class="d-inline-block align-text-center">
+                        @else
+                            <img src="{{ asset('image/profile/profile.png') }}" alt="user" width="30"
+                                height="30" class="d-inline-block align-text-center">
+                        @endif
+                    </a>
+
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{{ route('logout') }}">Cerrar sesión</a>
+                    </div>
+                @else
+                    <li class="nav-item ">
+                        <a href="{{ route('login') }}" class="nav-link btn btn-primary btn " role="button"
+                            style="padding:4px; background-color:green; width:100px; font-size:12px;">Ingresar</a>
+                    </li>
+                @endif
+
+
 
             </ul>
         </div>

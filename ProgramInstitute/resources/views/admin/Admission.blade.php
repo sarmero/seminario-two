@@ -2,6 +2,7 @@
 
 @section('style')
     <link rel="stylesheet" href="{{ asset('admin/css/admission.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @endsection
 
 @section('title')
@@ -35,13 +36,13 @@
                 });
             </script>
 
-            @isset($name)
-                <div class="program my-4 text-center">
+            <div class="program my-4 text-center">
+                @isset($name)
                     <h3>{{ $name->name }}
                         <br> <span>Cupos: {{ $name->quotas }} | Solicitudes: {{ $requests }}</span>
                     </h3>
-                </div>
-            @endisset
+                @endisset
+            </div>
 
             <div class="accordion accordion-flush" id="accordionExample">
                 <div class="accordion-item">
@@ -204,6 +205,36 @@
                 </div>
             </div>
 
+            <br><br>
+            <div class="text-center">
+                @isset($name)
+                    <a href="#" onclick="closeOffer('{{ $name->offer }}');" class="btn btn-primary" role="button">
+                        Cerrar oferta
+                    </a>
+                @endisset
+            </div>
         </div>
     </div>
+
+    <script>
+        function closeOffer(id) {
+            if (confirm('¿Estás seguro de que deseas cerrar esta oferta?')) {
+                $.ajax({
+                    type: 'GET',
+                    url: '/admin/admission/close/' + id,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        window.location.href = '/admin/admission';
+                    },
+                    error: function(error) {
+                        console.error('Error en la solicitud Ajax:', error);
+                    }
+                });
+            }
+        }
+    </script>
+
 @endsection

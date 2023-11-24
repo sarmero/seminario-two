@@ -12,18 +12,10 @@ class RatingsController extends Controller
 {
     public function index()
     {
-        if (Session::has('session')) {
-            if (session('session')) {
-                session(['page' => 'Calificaciones']);
-                $semester = Semester::get();
-                session(['inscription' => 1]);
-                return view('session.ratings', ['semester' => $semester]);
-            } else {
-                return redirect()->route('login');
-            }
-        } else {
-            return redirect()->route('home');
-        }
+        session(['page' => 'Calificaciones']);
+        $semester = Semester::get();
+        session(['inscription' => 1]);
+        return view('session.ratings', ['semester' => $semester]);
     }
 
     public function ratings(Request $request)

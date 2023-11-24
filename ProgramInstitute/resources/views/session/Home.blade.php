@@ -20,7 +20,7 @@
 
                             <div class="photo">
                                 @if (session('photo'))
-                                    <img src="data:image/jpeg;base64,{{ base64_encode(session('photo')) }}" alt="user">
+                                    <img src="{{ asset(session('photo')) }}" alt="user">
                                 @else
                                     <img src="{{ asset('image/profile/profile.png') }}" alt="">
                                 @endif
@@ -32,7 +32,8 @@
                             </div>
                         </div>
 
-                        <a href="{{ route('ratings') }}">
+                        <a
+                            @if (session('role') == 1) href="{{ route('ratings') }}" @else href="{{ route('teacher.ratings') }}" @endif>
                             <div class="item">
                                 <img src="{{ asset('image/profile/subject.jpg') }}" alt="">
 
@@ -46,8 +47,9 @@
                             </div>
                         </a>
 
+                        <a
+                            @if (session('role') == 1) href="{{ route('session.offer') }}" @else href="{{ route('teacher.chairs') }}" @endif>
 
-                        <a href="{{ route('session.offer') }}">
                             <div class="item">
                                 <img src="{{ asset('image/profile/ratings.png') }}" alt="">
 
@@ -56,12 +58,18 @@
                                 </div>
 
                                 <div class="text">
-                                    Ofertas
+                                    @if (session('role') == 1)
+                                        Ofertas
+                                    @else
+                                        Catedras
+                                    @endif
+
                                 </div>
                             </div>
                         </a>
 
-                        <a href="{{ route('plan') }}">
+                        <a
+                            @if (session('role') == 1) href="{{ route('plan') }}" @else href="{{ route('teacher.activity') }}" @endif>
                             <div class="item">
                                 <img src="{{ asset('image/profile/plan-study.png') }}" alt="">
 
@@ -70,7 +78,12 @@
                                 </div>
 
                                 <div class="text">
-                                    Plan de estudio
+
+                                    @if (session('role') == 1)
+                                        Plan de estudio
+                                    @else
+                                        Actividades
+                                    @endif
                                 </div>
                             </div>
                         </a>
@@ -123,10 +136,9 @@
                                         </div>
 
                                         @if ($news->image)
-                                            <img src="data:image/jpeg;base64,{{ base64_encode($news->image) }}"
-                                                alt="user">
+                                            <img src="{{ asset($news->image) }}" alt="user">
                                         @endif
-                                        
+
                                         <p>{{ $news->description }}</p>
                                     </div>
 
@@ -143,39 +155,41 @@
                             <img src="{{ asset('image/icon/v1_121.png') }}">
                         </div>
 
-                        <div class="academic">
-                            <div class="title text-center">
-                                Informacion Academica
+                        @if (session('role') == 1)
+                            <div class="academic">
+                                <div class="title text-center">
+                                    Informacion Academica
+                                </div>
+                                <hr>
+                                <div class="cont">
+                                    <div class="item">
+                                        <div class="theme">Codigo</div>
+                                        <div class="desc">{{ session('code') }}</div>
+                                    </div>
+
+                                    <div class="item">
+                                        <div class="theme">Semestre</div>
+                                        <div class="desc">{{ session('semester') }}</div>
+                                    </div>
+
+                                    <div class="item">
+                                        <div class="theme">Asignaturas</div>
+                                        <div class="desc">{{ session('subjects') }}/{{ session('subject_tt') }}</div>
+                                    </div>
+
+                                    <div class="item">
+                                        <div class="theme">Promedio</div>
+                                        <div class="desc">{{ session('average') }}</div>
+                                    </div>
+
+                                    <div class="item">
+                                        <div class="theme">Estatus</div>
+                                        <div class="desc">{{ session('position') }}</div>
+                                    </div>
+
+                                </div>
                             </div>
-                            <hr>
-                            <div class="cont">
-                                <div class="item">
-                                    <div class="theme">Codigo</div>
-                                    <div class="desc">{{ session('code') }}</div>
-                                </div>
-
-                                <div class="item">
-                                    <div class="theme">Semestre</div>
-                                    <div class="desc">{{ session('semester') }}</div>
-                                </div>
-
-                                <div class="item">
-                                    <div class="theme">Asignaturas</div>
-                                    <div class="desc">{{ session('subjects') }}/{{ session('subject_tt') }}</div>
-                                </div>
-
-                                <div class="item">
-                                    <div class="theme">Promedio</div>
-                                    <div class="desc">{{ session('average') }}</div>
-                                </div>
-
-                                <div class="item">
-                                    <div class="theme">Estatus</div>
-                                    <div class="desc">{{ session('position') }}</div>
-                                </div>
-
-                            </div>
-                        </div>
+                        @endif
 
                         <div class="activity">
                             <div class="title text-center">

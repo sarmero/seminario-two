@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class district extends Model
 {
     protected $table = 'district';
     use HasFactory;
 
-    public function person()
+    public function person():HasOne
     {
         return $this->hasOne(Person::class);
     }

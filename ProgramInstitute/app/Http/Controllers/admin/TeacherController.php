@@ -12,26 +12,17 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class TeacherController extends Controller
 {
     public function index()
     {
-        session(['session' => true]);
-        if (Session::has('session')) {
-            if (session('session')) {
+        $program = Program::select('program.id', 'program.name')
+            ->orderBy('name', 'desc')->get();
+        $district = district::get();
 
-                $program = Program::select('program.id', 'program.name')
-                ->orderBy('name', 'desc')->get();
-                $district = district::get();
-
-                return view('admin.teacherRegister',['program' => $program,'district' => $district]);
-            } else {
-                return redirect()->route('login');
-            }
-        } else {
-            return redirect()->route('home');
-        }
+        return view('admin.teacherRegister', ['program' => $program, 'district' => $district]);
     }
 
     public function teacher(Request $request)
@@ -58,23 +49,26 @@ class TeacherController extends Controller
 
     public function show()
     {
-        session(['session' => true]);
-        if (Session::has('session')) {
-            if (session('session')) {
-                $program = Program::select('program.id', 'program.name')
-                ->orderBy('name', 'desc')
-                ->get();
-                return view('admin.teacher',['program' => $program]);
-            } else {
-                return redirect()->route('login');
-            }
-        } else {
-            return redirect()->route('home');
-        }
+        $program = Program::select('program.id', 'program.name')
+            ->orderBy('name', 'desc')
+            ->get();
+        return view('admin.teacher', ['program' => $program]);
     }
 
     public function store(Request $request)
     {
+        $validador = Validator::make($request->all(), [
+            'document' => 'required|unique:person,number_document|max:10',
+            'firstNam' => 'required|alpha|max:200',
+            'lastName' => 'required|alpha|max:200',
+            'phone' => 'required|max:10',
+            'mail' => 'required|email|unique:contact,email|max:200',
+        ]);
+
+        if ($validador->fails()) {
+            return redirect()->back()->withErrors($validador)->withInput();
+        }
+
         $person = new person();
         $person->number_document = $request->input('document');
         $person->first_name = $request->input('firstName');
@@ -84,7 +78,6 @@ class TeacherController extends Controller
         $person->district_id = $request->input('district');
         $person->role_id = 3;
 
-
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
             $path = $file->store('public/image/profile/users');
@@ -92,18 +85,18 @@ class TeacherController extends Controller
             $person->photo = $url;
         }
 
-        $user = new User();
-        $user->
-
-        // $user->password = bcrypt($request->input('password'));
-        //<img src="data:image/jpeg;base64,{{ base64_encode($persona->foto) }}" alt="Foto de la persona">
-
         $person->save();
 
+        $user = new User();
+        $user->username = $person->number_document;
+        $user->password = substr($person->number_document, -4);
+        $user->person_id = $person->id;
+        $user->save();
+
         $teacher = new Teacher();
-        $teacher ->person_id = $person->id;
-        $teacher ->program_id = $request->input('program');
-        $teacher ->save();
+        $teacher->person_id = $person->id;
+        $teacher->program_id = $request->input('program');
+        $teacher->save();
 
 
         return  redirect()->route('admin.teacher');
@@ -121,7 +114,7 @@ class TeacherController extends Controller
 
     public function showPerson($id)
     {
-        $person =Teacher::select(
+        $person = Teacher::select(
             'person.*',
             'role.description as role',
             'program.name',
@@ -140,7 +133,13 @@ class TeacherController extends Controller
         return view('admin.userDetail', ['person' => $person]);
     }
 
-    public function delete(Request $request)
+    public function delete($id)
     {
+        Teacher::destroy($id);
+        return response()->json(['mensaje' => 'Elemento eliminado correctamente ']);
     }
 }
+
+
+// $user->password = bcrypt($request->input('password'));
+        //<img src="data:image/jpeg;base64,{{ base64_encode($persona->foto) }}" alt="Foto de la persona">

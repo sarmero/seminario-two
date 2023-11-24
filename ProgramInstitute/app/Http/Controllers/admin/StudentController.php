@@ -12,18 +12,8 @@ class StudentController extends Controller
 {
     public function index()
     {
-        session(['session' => true]);
-        if (Session::has('session')) {
-            if (session('session')) {
-                $calendar = Calendar::get();
-
-                return view('admin.student', ['calendar' => $calendar]);
-            } else {
-                return redirect()->route('login');
-            }
-        } else {
-            return redirect()->route('home');
-        }
+        $calendar = Calendar::get();
+        return view('admin.student', ['calendar' => $calendar]);
     }
 
     public function programs(Request $request)
@@ -41,7 +31,6 @@ class StudentController extends Controller
 
     public function programsStudent(Request $request)
     {
-
         $id = $request->input('id');
 
         $student = Offer::select('admission.id', 'student.code', 'person.first_name', 'person.last_name')

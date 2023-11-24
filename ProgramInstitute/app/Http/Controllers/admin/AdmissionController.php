@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Admission;
 use App\Models\Offer;
 use App\Models\Program;
+use App\Models\Student;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -14,18 +16,8 @@ class AdmissionController extends Controller
 
     public function index()
     {
-        session(['session' => true]);
-        if (Session::has('session')) {
-            if (session('session')) {
-                $program = $this->program();
-
-                return view('admin.admission', ['program' => $program]);
-            } else {
-                return redirect()->route('login');
-            }
-        } else {
-            return redirect()->route('home');
-        }
+        $program = $this->program();
+        return view('admin.admission', ['program' => $program]);
     }
 
 
@@ -41,7 +33,7 @@ class AdmissionController extends Controller
         $earrings = $this->admissionData(2, $pro);
         $rejected = $this->admissionData(3, $pro);
 
-        $nameProgram = Offer::select('offer.quotas', 'program.name')
+        $nameProgram = Offer::select('offer.quotas', 'program.name', 'offer.id as offer')
             ->join('program', 'offer.program_id', '=', 'program.id')
             ->where('program.id', $pro)
             ->get()
@@ -117,5 +109,36 @@ class AdmissionController extends Controller
             ->first();
 
         return view('admin.userDetail', ['person' => $person]);
+    }
+
+    public function closeOffer($id)
+    {
+        $offer = Offer::find($id);
+        $offer->state_offer_id = 2;
+        $offer->save();
+
+        $person = Admission::select('admission.id', 'admission.person_id', 'person.number_document as idp')
+            ->join('person', 'admission.person_id', '=', 'person.id')
+            ->where('admission.state_id', '1')
+            ->where('admission.offer_id', $id)
+            ->get();
+
+        foreach ($person as $i => $adm) {
+            $student = new Student();
+            $student->code = '223' . $id . $i;
+            $student->admission_id = $adm->id;
+            $student->semester_id = 1;
+
+            $student->save();
+
+            $user = new User();
+            $user->username = $adm->idp;
+            $user->password = bcrypt(substr($adm->idp, -4));
+            $user->person_id = $adm->person_id;
+
+            $user->save();
+        }
+
+        return response()->json(['mensaje' => 'Elemento eliminado correctamente ']);
     }
 }

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('image/icon/v1_28.png') }}" />
     <link href="{{ asset('https://fonts.googleapis.com/css?family=Inter&display=swap') }}" rel="stylesheet" />
@@ -20,13 +21,13 @@
 </head>
 
 <body>
-    @if (session('session') === false)
+    @if (!Auth::check())
         @include('common.navigation')
     @else
-        @if (session('rol')==='users')
-            @include('session/common.navigation')
-        @else
+        @if (session('role')==2)
             @include('admin/common.navigation')
+        @else
+            @include('session/common.navigation')
         @endif
 
     @endif

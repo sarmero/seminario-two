@@ -11,20 +11,12 @@ class PlanStudyController extends Controller
 {
     public function index()
     {
-        if (Session::has('session')) {
-            if (session('session')) {
-                session(['page' => 'Plan de estudio']);
+        session(['page' => 'Plan de estudio']);
 
-                $subject = Subject::all()
-                    ->where('program_id', session('program_id'))
-                    ->groupBy('semester_id');
+        $subject = Subject::all()
+            ->where('program_id', session('program_id'))
+            ->groupBy('semester_id');
 
-                return view('session.planStudy', ['subject' => $subject]);
-            } else {
-                return redirect()->route('login');
-            }
-        } else {
-            return redirect()->route('home');
-        }
+        return view('session.planStudy', ['subject' => $subject]);
     }
 }

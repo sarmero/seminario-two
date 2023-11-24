@@ -16,7 +16,10 @@
             <div class="text">
                 <div class="wlc">Bienvenido</div>
                 <div class="name">{{ session('first_name').' '.session('last_name') }}</div>
+
+                
             </div>
+
 
         </div>
     </div>

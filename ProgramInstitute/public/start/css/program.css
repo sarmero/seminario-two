@@ -1,11 +1,12 @@
-.title {
-  height: 40px;
+.container .cont .title {
   background: linear-gradient(90deg, #fff 21.1%, #2657a4 48.99%, #fff 76.87%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 50px;
+  text-align: center;
+}
+
+.container .cont .title .tit {
   color: #fff;
+  font-family: Inter;
+  font-size: 22px;
 }
 
 .cont {
@@ -13,6 +14,8 @@
   padding: 0 70px 0 70px;
   margin-bottom: 100px;
   position: relative;
+  min-height: 450px;
+  margin-bottom: 100px;
 }
 
 .description p {

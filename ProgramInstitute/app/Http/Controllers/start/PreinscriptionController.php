@@ -11,6 +11,8 @@ use App\Models\District;
 use App\Models\Offer;
 use App\Models\Program;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+
 
 class PreinscriptionController extends Controller
 {
@@ -29,12 +31,25 @@ class PreinscriptionController extends Controller
 
     public function store(Request $request)
     {
+        $validador = Validator::make($request->all(), [
+            'document' => 'required|unique:person,number_document|max:10',
+            'firstNam' => 'required|alpha|max:200',
+            'lastName' => 'required|alpha|max:200',
+            'phone' => 'required|max:10',
+            'mail' => 'required|email|unique:contact,email|max:200',
+        ]);
+
+        if ($validador->fails()) {
+            return redirect()->back()->withErrors($validador)->withInput();
+        }
+
         $person = new person();
         $person->number_document = $request->input('document');
         $person->first_name = $request->input('firstName');
         $person->last_name = $request->input('lastName');
         $person->gender = $request->input('gender');
         $person->contact_id = $this->contact($request->input('phone'), $request->input('mail'));
+        $person->contact_id = 1;
         $person->district_id = $request->input('district');
         $person->role_id = 1;
 
@@ -45,9 +60,6 @@ class PreinscriptionController extends Controller
             $url = Storage::url($path);
             $person->photo = $url;
         }
-
-        // $user->password = bcrypt($request->input('password'));
-        //<img src="data:image/jpeg;base64,{{ base64_encode($persona->foto) }}" alt="Foto de la persona">
 
         $person->save();
 

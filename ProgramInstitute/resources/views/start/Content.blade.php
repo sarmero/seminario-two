@@ -12,7 +12,7 @@
     <div class="container">
         <div class="cont">
             <div class="covers">
-                <img src="{{ asset('image/covers/covers1.png') }}" alt="">
+                <img src="{{ asset($program->image) }}" alt="">
                 <div class="tex">
                     <div class="text">
                         {{ $program->name }}
@@ -25,26 +25,6 @@
         <div class="cont2">
             <div class="description">
                 <p>{{ $program->description }}</p>
-            </div>
-
-
-            <div class="mod">
-                <div class="mod1">
-                    <img src="{{ asset('image/item/item2.png') }}" alt="">
-                    <h5>Duracion: <span> {{ count($duration) }} semestre</span></h5>
-                </div>
-                <div class="mod1">
-                    <img src="{{ asset('image/item/item2.png') }}" alt="">
-                    <h5>Modalidad: <span>{{ $program->modality }}</span> </h5>
-                </div>
-                <div class="mod1">
-                    <img src="{{ asset('image/item/item2.png') }}" alt="">
-                    <h5>Cupos: <span>{{ $program->quotas }}</span></h5>
-                </div>
-                <div class="mod1">
-                    <img src="{{ asset('image/item/item2.png') }}" alt="">
-                    <h5>Asignaturas: <span>{{ count($subject) }}</span></h5>
-                </div>
             </div>
 
             <div class="subject">
@@ -63,10 +43,12 @@
             </div>
 
             <div class="description">
-               <p class="text-center">
-                Estas asignaturas proporcionan una base sólida para que los estudiantes desarrollen sus habilidadescomprendan la importancia cultural y estética del arte y la cultura, y exploren su creatividad
-                en diversas disciplinas artísticas.
-               </p>
+                <p class="text-center">
+                    Estas asignaturas proporcionan una base sólida para que los estudiantes desarrollen sus
+                    habilidadescomprendan la importancia cultural y estética del arte y la cultura, y exploren su
+                    creatividad
+                    en diversas disciplinas artísticas.
+                </p>
             </div>
         </div>
     </div>

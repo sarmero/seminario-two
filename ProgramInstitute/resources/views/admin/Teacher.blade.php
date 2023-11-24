@@ -2,6 +2,7 @@
 
 @section('style')
     <link rel="stylesheet" href="{{ asset('admin/css/teacher.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @endsection
 
 @section('title')
@@ -66,8 +67,8 @@
                                         <div class="icon">
                                             <a href="{{ route('admin.teacher.person', $item->id) }}" title="visualizar"
                                                 target="_blank"><i class="fas fa-eye"></i></a>
-                                            <a href="{{ route('admin.teacher.delete', $item->teacher) }}" title="Eliminar"><i
-                                                    class="fas fa-trash-alt"></i></a>
+                                            <a href="#" onclick="deleteElement('{{ $item->id }}');"
+                                                title="Eliminar"><i class="fas fa-trash-alt"></i></a>
                                         </div>
                                     </td>
                                 </tr>
@@ -78,4 +79,24 @@
             @endisset
         </div>
     </div>
+    <script>
+        function deleteElement(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar este docente?')) {
+                $.ajax({
+                    type: 'DELETE',
+                    url: '/admin/teacher/' + id,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        window.location.href = '/admin/teacher';
+                    },
+                    error: function(error) {
+                        console.error('Error en la solicitud Ajax:', error);
+                    }
+                });
+            }
+        }
+    </script>
 @endsection

@@ -13,27 +13,29 @@ class Admission extends Model
     protected $table = 'admission';
     public $timestamps = false;
 
-    protected $fillable = ['state_id', 'person_id','offer_id'];
+    protected $fillable = [
+        'state_id',
+        'person_id',
+        'offer_id'
+    ];
 
-    public function state():BelongsTo
+    public function state(): BelongsTo
     {
         return $this->belongsTo(State::class);
     }
 
-    public function person():BelongsTo
+    public function person(): BelongsTo
     {
         return $this->belongsTo(Person::class);
     }
 
-    public function student():HasOne
+    public function student(): HasOne
     {
         return $this->hasOne(Student::class);
     }
 
-    public function offer():BelongsTo
+    public function offer(): BelongsTo
     {
         return $this->belongsTo(Offer::class);
     }
-
- 
 }

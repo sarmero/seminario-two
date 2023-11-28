@@ -13,6 +13,11 @@ class Inscription extends Model
     protected $table = 'inscription';
     public $timestamps = false;
 
+    protected $fillable = [
+		'student_id',
+		'offer_id'
+	];
+
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);

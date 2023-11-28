@@ -13,11 +13,20 @@ use Illuminate\Support\Facades\Session;
 
 class AdmissionController extends Controller
 {
+    private $program;
+
+    public function __construct()
+    {
+        $this->program = Offer::select('program.id', 'program.name')
+            ->join('program', 'offer.program_id', '=', 'program.id')
+            ->where('offer.state_offer_id', '1')
+            ->orderBy('program.name', 'desc')
+            ->get();
+    }
 
     public function index()
     {
-        $program = $this->program();
-        return view('admin.admission', ['program' => $program]);
+        return view('admin.admission', ['program' => $this->program]);
     }
 
 
@@ -39,14 +48,12 @@ class AdmissionController extends Controller
             ->get()
             ->first();
 
-        $program = $this->program();
-
         $requests = Admission::join('offer', 'admission.offer_id', '=', 'offer.id')
             ->where('offer.program_id', $pro)
             ->count();
 
         return view('admin.admission', [
-            'program' => $program,
+            'program' => $this->program,
             'name' => $nameProgram,
             'approved' => $approved,
             'rejected' => $rejected,
@@ -71,17 +78,6 @@ class AdmissionController extends Controller
         $admission->state_id = $state;
         $admission->save();
         return $this->admissionProgram($pro);
-    }
-
-    private function program()
-    {
-        $program = Offer::select('program.id', 'program.name')
-            ->join('program', 'offer.program_id', '=', 'program.id')
-            ->where('offer.state_offer_id', '1')
-            ->orderBy('program.name', 'desc')
-            ->get();
-
-        return $program;
     }
 
     public function showPerson($id)
@@ -114,30 +110,9 @@ class AdmissionController extends Controller
     public function closeOffer($id)
     {
         $offer = Offer::find($id);
-        $offer->state_offer_id = 2;
-        $offer->save();
-
-        $person = Admission::select('admission.id', 'admission.person_id', 'person.number_document as idp')
-            ->join('person', 'admission.person_id', '=', 'person.id')
-            ->where('admission.state_id', '1')
-            ->where('admission.offer_id', $id)
-            ->get();
-
-        foreach ($person as $i => $adm) {
-            $student = new Student();
-            $student->code = '223' . $id . $i;
-            $student->admission_id = $adm->id;
-            $student->semester_id = 1;
-
-            $student->save();
-
-            $user = new User();
-            $user->username = $adm->idp;
-            $user->password = bcrypt(substr($adm->idp, -4));
-            $user->person_id = $adm->person_id;
-
-            $user->save();
-        }
+        $offer->update([
+            'state_offer_id' => 2,
+        ]);
 
         return response()->json(['mensaje' => 'Elemento eliminado correctamente ']);
     }

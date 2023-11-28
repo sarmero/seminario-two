@@ -12,6 +12,10 @@ class Calendar extends Model
     protected $table = 'calendar';
     public $timestamps = false;
 
+    protected $fillable = [
+		'description'
+	];
+
     public function offer(): HasMany
     {
         return $this->hasMany(Offer::class);

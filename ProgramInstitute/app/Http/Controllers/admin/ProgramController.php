@@ -19,81 +19,94 @@ class ProgramController extends Controller
 {
     public function index()
     {
-        $modality = Modality::get();
-        return view('admin.programRegister', ['modality' => $modality]);
-    }
-
-    public function show()
-    {
         $program = Program::select('program.id', 'program.name', 'program.description', DB::raw('COUNT(subject.id) as subject'))
             ->leftJoin('subject', 'program.id', '=', 'subject.program_id')
             ->groupBy('program.id', 'program.name', 'program.description')
             ->get();
 
-        return view('admin.program', ['program' => $program]);
+        return view('admin.program.AdminProgram', ['program' => $program]);
+    }
+
+    public function create()
+    {
+        return view('admin.program.CreateProgram');
+    }
+
+    public function edit(Program $program)
+    {
+        return view('admin.program.EditProgram', ['program' => $program]);
     }
 
     public function store(Request $request)
     {
         $validador = FacadesValidator::make($request->all(), [
-            'name' => 'required|unique:program,name|alpha|max:200',
+            'program' => 'required|unique:program,name|regex:/^([A-Za-zÑñ\s]*)$/|max:200',
+            'image' => 'required|image|mimes:jpg,png,jpeg|max:2040',
         ]);
 
         if ($validador->fails()) {
             return redirect()->back()->withErrors($validador)->withInput();
         }
 
-        $program = new Program();
-        $program->name = $request->input('program');
-        $program->description = $request->input('description');
+        $url = time() . '.' . $request->image->extension();
+        $request->image->move(public_path('storage/program'), $url);
 
 
-        if ($request->hasFile('imag')) {
-            $file = $request->file('imag');
-            $path = $file->store('public/image/program');
-            $url = Storage::url($path);
-            $program->image = $url;
-        }
+        Program::create([
+            'name' => $request->program,
+            'description' => $request->description,
+            'image' => $url,
+        ]);
 
-        $program->save();
-
-        return redirect()->route('admin.program');
+        return redirect()->route('admin/program.index');
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Program $program)
     {
-        $program = Program::find($id);
-        $program->name = $request->input('program');
-        $program->description = $request->input('description');
+        $validador = FacadesValidator::make($request->all(), [
+            'program' => 'required|regex:/^([A-Za-zÑñ\s]*)$/|max:200',
+            'image' => 'required|image|mimes:jpg,png,jpeg|max:2040',
+        ]);
 
-        if ($request->hasFile('imag')) {
-            $file = $request->file('imag');
-            $path = $file->store('public/image/program');
-            $url = Storage::url($path);
-
-            if ($program->image != null) {
-                Storage::delete($program->image);
-            }
-
-            $program->image = $url;
+        if ($validador->fails()) {
+            return redirect()->back()->withErrors($validador)->withInput();
         }
 
-        $program->save();
-        return redirect()->route('admin.program');
+        $url = time() . '.' . $request->image->extension();
+        $request->image->move(public_path('storage/program'), $url);
+
+        $program->update([
+            'name' => $request->program,
+            'description' => $request->description,
+            'image' => $url,
+        ]);
+
+        return redirect()->route('admin/program.index');
     }
 
-    public function delete(Request $request, $id)
+    public function destroy(Program $program)
     {
-        var_dump($request);
-
-        $program = Program::find($id);
-
-        if ($program->image != null) {
-            Storage::delete($program->image);
-        }
-
-        Program::destroy($id);
-
-        return response()->json(['mensaje' => 'Elemento eliminado correctamente ']);
+        $program->delete();
+        return redirect()->route('admin/program.index');
     }
+
+
 }
+
+// if ($program->image != null) {
+//     Storage::delete($program->image);
+// }
+
+// public function delete(Request $request, $id)
+    // {
+
+    //     $program = Program::find($id);
+
+    //     if ($program->image != null) {
+    //         Storage::delete($program->image);
+    //     }
+
+    //     Program::destroy($id);
+
+    //     return response()->json(['mensaje' => 'Elemento eliminado correctamente ']);
+    // }

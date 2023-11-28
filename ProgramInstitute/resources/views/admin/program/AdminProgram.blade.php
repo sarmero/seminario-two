@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('admin.BaseAdmin')
 
 @section('style')
     <link rel="stylesheet" href="{{ asset('admin/css/program.css') }}">
@@ -16,6 +16,8 @@
                 <div class="tit">Programas</div>
             </div>
 
+
+
             <div class="table-responsive">
                 <table class="table table-striped table table-bordered align-middle">
                     <thead class="">
@@ -29,21 +31,22 @@
 
                     <tbody>
                         @foreach ($program as $i => $item)
+
                             <tr>
                                 <td class="text-center">{{ $i + 1 }}</td>
                                 <td>{{ $item->name }}</td>
                                 <td class="text-center">{{ $item->subject }}</td>
 
                                 <td class="text-center">
-                                    {{-- <a href="{{ route('content', $item->id) }}" title="contenido" target="_blank"><i
-                                            class="fas fa-eye"></i></a> --}}
-                                    <a href="#"
-                                        onclick="atualizarElementosForm('{{ $item->id }}', '{{ $item->name }}', '{{ $item->description }}');"
+                                    <a href="{{ route('content', $item->id) }}" title="contenido" target="_blank"><i
+                                            class="fas fa-eye"></i></a>
+                                    <a href="{{ route('program.edit', $item) }}"
+                                        {{-- onclick="atualizarElementosForm('{{ $item->id }}', '{{ $item->name }}', '{{ $item->description }}');" --}}
                                         title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <a href="#" onclick="deleteElement('{{ $item->id }}');" title="Eliminar"><i
-                                        class="fas fa-trash-alt"></i></a>
+                                            class="fas fa-trash-alt"></i></a>
                                 </td>
                             </tr>
                         @endforeach

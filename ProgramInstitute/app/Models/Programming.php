@@ -12,6 +12,11 @@ class Programming extends Model
     protected $table = 'programming';
     public $timestamps = false;
 
+    protected $fillable = [
+		'teacher_id',
+		'offer_subject_id'
+	];
+
     public function teacher(): BelongsTo
     {
         return $this->belongsTo(Teacher::class);

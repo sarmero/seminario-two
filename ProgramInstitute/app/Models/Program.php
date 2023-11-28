@@ -13,9 +13,20 @@ class Program extends Model
     protected $table = 'program';
     public $timestamps = false;
 
+    protected $fillable = [
+		'name',
+		'description',
+		'image'
+	];
+
     public function subject():HasMany
     {
         return $this->hasMany(Subject::class);
+    }
+
+    public function teacher():HasMany
+    {
+        return $this->hasMany(Teacher::class);
     }
 
     public function offer():HasMany

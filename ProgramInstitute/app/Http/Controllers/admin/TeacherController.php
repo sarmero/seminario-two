@@ -16,13 +16,19 @@ use Illuminate\Support\Facades\Validator;
 
 class TeacherController extends Controller
 {
+    private $program;
+
+    public function __construct()
+    {
+        $this->program = Program::select('program.id', 'program.name')
+            ->orderBy('name', 'desc')->get();
+    }
+
+
     public function index()
     {
-        $program = Program::select('program.id', 'program.name')
-            ->orderBy('name', 'desc')->get();
         $district = district::get();
-
-        return view('admin.teacherRegister', ['program' => $program, 'district' => $district]);
+        return view('admin.teacherRegister', ['program' => $this->program, 'district' => $district]);
     }
 
     public function teacher(Request $request)
@@ -35,82 +41,62 @@ class TeacherController extends Controller
             ->orderBy('person.first_name', 'asc')
             ->get();
 
-        $program = Program::select('program.id', 'program.name')
-            ->orderBy('name', 'desc')
-            ->get();
-
         $nameProgram = Program::where('id', $pro)
             ->select('program.name')
             ->get()
             ->first();
 
-        return view('admin.teacher', ['program' => $program, 'teacher' => $teacher, 'name' => $nameProgram]);
+        return view('admin.teacher', ['program' => $this->program, 'teacher' => $teacher, 'name' => $nameProgram]);
     }
 
     public function show()
     {
-        $program = Program::select('program.id', 'program.name')
-            ->orderBy('name', 'desc')
-            ->get();
-        return view('admin.teacher', ['program' => $program]);
+        return view('admin.teacher', ['program' => $this->program]);
     }
 
     public function store(Request $request)
     {
         $validador = Validator::make($request->all(), [
             'document' => 'required|unique:person,number_document|max:10',
-            'firstNam' => 'required|alpha|max:200',
-            'lastName' => 'required|alpha|max:200',
+            'firstName' => 'required|regex:/^([A-Za-zÑñ\s]*)$/|between:3,200',
+            'lastName' => 'required|regex:/^([A-Za-zÑñ\s]*)$/|between:3,200',
             'phone' => 'required|max:10',
             'mail' => 'required|email|unique:contact,email|max:200',
+            'photo' => 'required|image|mimes:jpg,png,jpeg|max:2040',
         ]);
 
         if ($validador->fails()) {
             return redirect()->back()->withErrors($validador)->withInput();
         }
 
-        $person = new person();
-        $person->number_document = $request->input('document');
-        $person->first_name = $request->input('firstName');
-        $person->last_name = $request->input('lastName');
-        $person->gender = $request->input('gender');
-        $person->contact_id = $this->contact($request->input('phone'), $request->input('mail'));
-        $person->district_id = $request->input('district');
-        $person->role_id = 3;
+        $url = time() . '.' . $request->image->extension();
+        $request->image->move(public_path('storage/profile'), $url);
 
-        if ($request->hasFile('photo')) {
-            $file = $request->file('photo');
-            $path = $file->store('public/image/profile/users');
-            $url = Storage::url($path);
-            $person->photo = $url;
-        }
+        $contact = Contact::create([
+            'email' => $request->mail,
+            'phone' => $request->phone,
+        ]);
 
-        $person->save();
+        $person = person::create([
+            'number_document' => $request->document,
+            'first_name' => $request->firstName,
+            'last_name' => $request->lastName,
+            'gender' => $request->gender,
+            'contact_id' => $contact->id,
+            'district_id' => $request->district,
+            'role_id' => 3,
+            'photo' => $url,
+        ]);
 
-        $user = new User();
-        $user->username = $person->number_document;
-        $user->password = substr($person->number_document, -4);
-        $user->person_id = $person->id;
-        $user->save();
-
-        $teacher = new Teacher();
-        $teacher->person_id = $person->id;
-        $teacher->program_id = $request->input('program');
-        $teacher->save();
+        Teacher::create([
+            'program_id' => $request->program,
+            'person_id' => $person->id,
+        ]);
 
 
         return  redirect()->route('admin.teacher');
     }
 
-
-    private function contact($phone, $mail)
-    {
-        $contact = new Contact();
-        $contact->email = $mail;
-        $contact->phone = $phone;
-        $contact->save();
-        return $contact->id;
-    }
 
     public function showPerson($id)
     {
@@ -143,3 +129,10 @@ class TeacherController extends Controller
 
 // $user->password = bcrypt($request->input('password'));
         //<img src="data:image/jpeg;base64,{{ base64_encode($persona->foto) }}" alt="Foto de la persona">
+
+        // if ($request->hasFile('photo')) {
+        //     $imageName = time() . '.' . $request->image->extension();
+        //     $file = $request->file('photo');
+        //     $path = $file->store('public/image/profile/users');
+        //     $url = Storage::url($path);
+        // }

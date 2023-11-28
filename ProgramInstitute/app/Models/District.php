@@ -8,8 +8,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class district extends Model
 {
-    protected $table = 'district';
     use HasFactory;
+    protected $table = 'district';
+    public $timestamps = false;
+
+	protected $fillable = [
+		'description'
+	];
 
     public function person():HasOne
     {

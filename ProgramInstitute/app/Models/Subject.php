@@ -13,6 +13,12 @@ class Subject extends Model
     protected $table = 'subject';
     public $timestamps = false;
 
+    protected $fillable = [
+		'description',
+		'program_id',
+		'semester_id'
+	];
+
     public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class);

@@ -9,7 +9,6 @@ class HomeController extends Controller
 {
     public function index()
     {
-        session(['navStart' => true]);
         return view('start.home');
     }
 

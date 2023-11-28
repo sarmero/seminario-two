@@ -13,6 +13,16 @@ class Offer extends Model
     protected $table = 'offer';
     public $timestamps = false;
 
+    protected $fillable = [
+        'code',
+        'quotas',
+        'calendar_id',
+        'program_id',
+        'modality_id',
+        'state_offer_id'
+    ];
+
+
     public function admission(): HasMany
     {
         return $this->hasMany(Admission::class);
@@ -43,5 +53,49 @@ class Offer extends Model
         return $this->belongsTo(Program::class);
     }
 
+    protected static function boot()
+    {
+        parent::boot();
 
+        // Evento se dispara al actualizar una oferta de programas
+        static::updated(function ($oferta) {
+            if ($oferta->state_offer_id == 2) {
+                $person = Admission::select('admission.id', 'admission.person_id', 'person.number_document as idp')
+                    ->join('person', 'admission.person_id', '=', 'person.id')
+                    ->where('admission.state_id', '1')
+                    ->get();
+
+
+                foreach ($person as $i => $adm) {
+                    $code = static::uniqueCode();
+                    Student::create(
+                        [
+                            'code' => $code,
+                            'admission_id' => $adm->id,
+                            'semester_id' => 1,
+                        ]
+                    );
+
+                    User::create(
+                        [
+                            'username' =>  $code,
+                            'person_id' => $adm->person_id,
+                            'password' => bcrypt(substr($adm->idp, -4)),
+                        ]
+                    );
+                }
+            }
+        });
+    }
+
+    protected static function uniqueCode()
+    {
+        $code = date('Y') . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+
+        while (Student::where('code', $code)->exists()) {
+            $code = date('Y') . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+        }
+
+        return $code;
+    }
 }

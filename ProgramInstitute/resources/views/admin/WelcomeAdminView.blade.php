@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('admin.BaseAdmin')
 
 @section('style')
     <link rel="stylesheet" href="{{ asset('admin/css/home.css') }}">
@@ -16,10 +16,7 @@
             <div class="text">
                 <div class="wlc">Bienvenido</div>
                 <div class="name">{{ session('first_name').' '.session('last_name') }}</div>
-
-                
             </div>
-
 
         </div>
     </div>

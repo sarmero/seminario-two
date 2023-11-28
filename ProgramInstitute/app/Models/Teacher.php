@@ -14,9 +14,19 @@ class Teacher extends Model
     protected $table = 'teacher';
     public $timestamps = false;
 
+    protected $fillable = [
+		'program_id',
+		'person_id'
+	];
+
     public function person(): BelongsTo
     {
         return $this->belongsTo(Person::class);
+    }
+
+    public function program(): BelongsTo
+    {
+        return $this->belongsTo(Program::class);
     }
 
     public function programming(): HasMany

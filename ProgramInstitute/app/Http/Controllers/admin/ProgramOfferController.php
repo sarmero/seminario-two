@@ -30,15 +30,20 @@ class ProgramOfferController extends Controller
 
     public function store(Request $request)
     {
-        $offer = new Offer();
-        $offer->program_id = $request->input('program');
-        $offer->code = uniqid();
-        $offer->quotas = $request->input('quotas');
-        $offer->modality_id = $request->input('modality');
-        $offer->calendar_id =  session('calendar');
-        $offer->state_offer_id = 1;
 
-        $offer->save();
+        $code = '678' . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
+        while (Offer::where('code', $code)->exists()) {
+            $code = '678' . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
+        }
+
+        Offer::create([
+            'code' => $code,
+            'quotas' => $request->quotas,
+            'calendar_id' => $request->calendar,
+            'program_id' => $request->program,
+            'modality_id' => $request->modality,
+            'state_offer_id' => 1,
+        ]);
 
         return redirect()->route('admin.program.offer');
     }
@@ -46,9 +51,10 @@ class ProgramOfferController extends Controller
     public function update(Request $request, $id)
     {
         $offer = Offer::find($id);
-        $offer->quotas = $request->input('quotas');
-        $offer->modality_id = $request->input('modality');
-        $offer->save();
+        $offer->update([
+            'modality_id' => $request->modality,
+            'quotas' => $request->quotas,
+        ]);
 
         return redirect()->route('admin.program.offer');
     }

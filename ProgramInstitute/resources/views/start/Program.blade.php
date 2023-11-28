@@ -23,7 +23,7 @@
                         <div class="imag">
 
                             @if ($pro->image != null)
-                                <img src="{{ asset($pro->image) }}" alt="program"
+                                <img src="{{ asset('storage/pets/'.$pro->image) }}" alt="program"
                                     class="d-inline-block align-text-center">
                             @else
                                 <img src="{{ asset('image/covers/covers3.png') }}" alt="program"

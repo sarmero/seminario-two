@@ -13,6 +13,12 @@ class OfferSubject extends Model
     protected $table = 'offer_subject';
     public $timestamps = false;
 
+    protected $fillable = [
+		'subject_id',
+		'calendar_id',
+		'quotas'
+	];
+
     public function subject(): BelongsTo
     {
         return $this->belongsTo(Subject::class);

@@ -12,7 +12,10 @@ class Contact extends Model
     protected $table = 'contact';
     public $timestamps = false;
 
-    protected $fillable = ['email', 'phone'];
+    protected $fillable = [
+        'email',
+        'phone'
+    ];
 
     public function person(): HasOne
     {

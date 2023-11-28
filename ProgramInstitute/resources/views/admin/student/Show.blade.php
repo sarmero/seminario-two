@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('admin.BaseAdmin')
 
 @section('style')
     <link rel="stylesheet" href="{{ asset('admin/css/program.css') }}">
@@ -53,7 +53,7 @@
 
                     <tbody id="tableBody">
                     </tbody>
-                    
+
                 </table>
             </div>
 

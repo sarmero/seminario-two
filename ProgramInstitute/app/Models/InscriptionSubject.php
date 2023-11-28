@@ -13,6 +13,12 @@ class InscriptionSubject extends Model
     protected $table = 'inscription_subject';
     public $timestamps = false;
 
+    protected $fillable = [
+        'note',
+        'offer_subject_id',
+        'inscription_id'
+    ];
+
     public function inscription(): BelongsTo
     {
         return $this->belongsTo(Inscription::class);

@@ -14,6 +14,12 @@ class Student extends Model
     protected $table = 'student';
     public $timestamps = false;
 
+    protected $fillable = [
+		'code',
+		'admission_id',
+		'semester_id'
+	];
+
     public function admission(): BelongsTo
     {
         return $this->belongsTo(Admission::class);

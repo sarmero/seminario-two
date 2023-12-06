@@ -6,7 +6,7 @@
 @endsection
 
 @section('title')
-    Programas
+    Asignaturas
 @endsection
 
 @section('content')
@@ -16,25 +16,22 @@
                 <div class="tit">Asignaturas</div>
             </div>
 
-            <form action="{{ route('admin.subject.program') }}" method="POST">
-                @csrf
-                <div class="semester">
-                    <label for="program" class="form-label">Programa:</label>
-                    <select class="form-select" name="program" id="program" required alt="gandalf">
-                        <option value="">Choose...</option>
-                        @foreach ($program as $sem)
-                            <option value="{{ $sem->id }}">{{ $sem->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-            </form>
+            <div class="create mb-3 d-flex justify-content-end">
+                <a href="{{ route('subject.create') }}" class="btn btn-primary btn-sm" role="button">
+                    Crear Asignatura
+                </a>
+            </div>
 
-            <script>
-                document.getElementById('program').addEventListener('change', function() {
-                    this.form.submit();
-                });
-            </script>
+            <div class="semester">
+                <label for="program" class="form-label">Programa:</label>
+                <select class="form-select" name="program" id="program" required alt="gandalf">
+                    <option value="">Elija...</option>
+                    @foreach ($program as $sem)
+                        <option value="{{ $sem->id }}">{{ $sem->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
             @isset($name)
                 <div class="program my-4 text-center">
@@ -50,140 +47,102 @@
                             <th scope="col">Asignatura</th>
                             <th class="text-center" scope="col">semestre</th>
                             <th class="text-center" scope="col">Opcion</th>
-
                         </tr>
                     </thead>
 
-                    <tbody>
-                        @isset($subject)
-                            @foreach ($subject as $i => $item)
-                                <tr>
-                                    <td class="text-center">{{ $i + 1 }}</td>
-                                    <td>{{ $item->description }}</td>
-                                    <td class="text-center">{{ $item->semester_id }}</td>
-
-                                    <td class="text-center">
-                                        <a href="#"
-                                            onclick="atualizarElementosForm('{{ $item->id }}', '{{ $item->description }}', '{{ $name->name }}');"
-                                            title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a href="#" onclick="deleteElement('{{ $item->id }}');" title="Eliminar"><i
-                                            class="fas fa-trash-alt"></i></a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        @endisset
+                    <tbody id="tableBody">
                     </tbody>
+
                 </table>
             </div>
 
-            <div class="modal fade" id="actualizarModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-                aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Atualizar Asignatura</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-
-                        <div class="modal-body">
-                            <form id="update" method="POST">
-                                @csrf
-                                @method('PUT')
-
-                                <form class="needs-validation" novalidate>
-
-                                    <div class="row">
-
-
-                                        <div class="col-sm-12">
-                                            <div class="name" id="nameProgram"></div>
-                                        </div>
-
-
-                                        <div class="col-sm-12">
-                                            <label for="subject" class="form-label">Nombre:</label>
-                                            <input type="text" class="form-control" name="subject" id="subject"
-                                                placeholder="" value="" required>
-                                            <div class="invalid-feedback">
-                                                Valid Name is required.
-                                            </div>
-                                        </div>
-
-                                        <div class="col-sm-12">
-                                            <label for="program" class="form-label">Semestre:</label>
-                                            <select class="form-select" name="semester" id="semester" required
-                                                alt="gandalf">
-                                                <option value="">Choose...</option>
-                                                @foreach ($semester as $sem)
-                                                    <option value="{{ $sem->id }}">{{ $sem->description }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <div class="invalid-feedback">
-                                                Please select a valid Genero
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                    <hr class="my-4">
-
-                                    <button class="w-50 btn btn-primary btn-sm offset-md-3" type="submit">Enviar</button>
-                                    <br><br>
-
-                                </form>
-                            </form>
-
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @include('admin.common.ConfirmationDelete')
 
         </div>
     </div>
 
     <script>
-        function atualizarElementosForm(id, subject, program) {
+        function deleteElement(id) {
 
-            $('#nameProgram').html('');
-            title = document.querySelector('#nameProgram');
-            const cont = document.createElement('h3');
-            cont.setAttribute('style', 'width:100%;');
-            cont.textContent = program;
-            title.appendChild(cont);
+            $('#staticBackdropLabel').html('');
+            title = document.querySelector('#staticBackdropLabel');
+            title.textContent = 'Eliminar Asignatura';
 
-            document.querySelector('#subject').value = subject;
+            $('#message').html('');
+            message = document.querySelector('#message');
+            message.textContent = '¿Estas seguro que deseas Eliminar esta Asignatura?';
 
+            form = document.querySelector('#delete');
+            form.setAttribute('action', 'subject/' + id);
 
-            form = document.querySelector('#update');
-            form.setAttribute('action', '/admin/subject/update/' + id);
-
-            $('#actualizarModal').modal('show');
-
+            $('#deleteModal').modal('show');
         }
 
-        function deleteElement(id) {
-            if (confirm('¿Estás seguro de que quieres eliminar esta oferta?')) {
-                $.ajax({
-                    type: 'DELETE',
-                    url: '/admin/subject/' + id,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        console.log(response);
-                    },
-                    error: function(error) {
-                        console.error('Error en la solicitud Ajax:', error);
-                    }
+
+        $(document).ready(function() {
+            $('#program').change(function() {
+                var program = $(this).val();
+
+                $('#tableBody').html('<tbody id="tableBody"></tbody>');
+
+                if (program !== '') {
+                    $.ajax({
+                        url: '/subject/' + program,
+                        type: 'GET',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+
+                            if (response.subject.length > 0) {
+                                $('#tableBody').html('<tbody id="tableBody"></tbody>');
+                                ontain_data_table(response.subject);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.log(error);
+                        }
+                    });
+                }
+            });
+
+            function ontain_data_table(response) {
+                const tableBody = document.querySelector('#tableBody');
+
+                $.each(response, function(index, subject) {
+
+                    const rowData = document.createElement('tr');
+
+                    const ind = document.createElement('td');
+                    ind.classList.add('text-center');
+                    ind.setAttribute('scope', 'row');
+
+                    const name = document.createElement('td');
+                    const sem = document.createElement('td');
+                    sem.classList.add('text-center');
+
+                    const opt = document.createElement('td');
+                    opt.setAttribute('class', 'd-flex justify-content-center');
+                    // opt.classList.add('d-flex justify-content-center');
+
+                    ind.textContent = index + 1;
+                    name.textContent = subject.description;
+                    sem.textContent = subject.semester_id;
+                    opt.innerHTML =
+                        `
+                    <a href="subject/${subject.id}/edit" title="Editar"><i class="fas fa-edit mx-1"></i></a>
+                    <a href="#" onclick="deleteElement('${subject.id}');" title="Eliminar"><i class="fas fa-trash-alt"></i></a>
+                    `;
+
+                    rowData.appendChild(ind);
+                    rowData.appendChild(name);
+                    rowData.appendChild(sem);
+                    rowData.appendChild(opt);
+
+                    tableBody.appendChild(rowData);
                 });
             }
-        }
+        });
     </script>
-
 @endsection

@@ -30,6 +30,8 @@ function atualizarElementosForm(id, program) {
     form = document.querySelector('#update');
     form.setAttribute('action', '/admin/program/offer/update/' + id);
 
+
+
     $('#actualizarModal').modal('show');
 
 }

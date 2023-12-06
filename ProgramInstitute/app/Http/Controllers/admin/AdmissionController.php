@@ -26,33 +26,27 @@ class AdmissionController extends Controller
 
     public function index()
     {
-        return view('admin.admission', ['program' => $this->program]);
+        return view('admin.admission.AdminAdmission', ['program' => $this->program]);
     }
 
 
-    public function admission(Request $request)
+    public function show($id)
     {
-        $pro = $request->input('program');
-        return $this->admissionProgram($pro);
-    }
-
-    private function admissionProgram($pro)
-    {
-        $approved = $this->admissionData(1, $pro);
-        $earrings = $this->admissionData(2, $pro);
-        $rejected = $this->admissionData(3, $pro);
+        $approved = $this->admissionData(1, $id);
+        $earrings = $this->admissionData(2, $id);
+        $rejected = $this->admissionData(3, $id);
 
         $nameProgram = Offer::select('offer.quotas', 'program.name', 'offer.id as offer')
             ->join('program', 'offer.program_id', '=', 'program.id')
-            ->where('program.id', $pro)
+            ->where('program.id', $id)
             ->get()
             ->first();
 
         $requests = Admission::join('offer', 'admission.offer_id', '=', 'offer.id')
-            ->where('offer.program_id', $pro)
+            ->where('offer.program_id', $id)
             ->count();
 
-        return view('admin.admission', [
+        return response()->json( [
             'program' => $this->program,
             'name' => $nameProgram,
             'approved' => $approved,
@@ -72,12 +66,14 @@ class AdmissionController extends Controller
             ->get();
     }
 
-    public function update($state, $id, $pro)
+    public function update(Request $request, $id,)
     {
         $admission = Admission::find($id);
-        $admission->state_id = $state;
-        $admission->save();
-        return $this->admissionProgram($pro);
+        $admission->update([
+            'state_id' =>  $request->state,
+        ]);
+
+        return response()->json(['message'=>'Atualizado..!']);
     }
 
     public function showPerson($id)
@@ -104,7 +100,7 @@ class AdmissionController extends Controller
             ->get()
             ->first();
 
-        return view('admin.userDetail', ['person' => $person]);
+        return view('admin.usersDetail.UserDetail', ['person' => $person]);
     }
 
     public function closeOffer($id)

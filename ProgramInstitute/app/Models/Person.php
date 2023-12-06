@@ -54,31 +54,33 @@ class person extends Model
         return $this->belongsTo(Role::class);
     }
 
-    protected static function boot()
-    {
-        parent::boot();
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::created(function ($person) {
-            if ($person->role_id == 3) {
-                User::create(
-                    [
-                        'username' =>  static::uniqueCode(),
-                        'person_id' => $person->id,
-                        'password' => bcrypt(substr($person->number_document, -4)),
-                    ]
-                );
-            }
-        });
-    }
+    //     static::created(function ($person) {
+    //         if ($person->role_id == 3) {
+    //             User::create(
+    //                 [
+    //                     'username' =>  static::uniqueCode(),
+    //                     'person_id' => $person->id,
+    //                     'password' => bcrypt(substr($person->number_document, -4)),
+    //                 ]
+    //             );
+    //         }
+    //     });
 
-    protected static function uniqueCode()
-    {
-        $code = '345' . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
 
-        while (User::where('username', $code)->exists()) {
-            $code = '345' . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
-        }
+    // }
 
-        return $code;
-    }
+    // protected static function uniqueCode()
+    // {
+    //     $code = '345' . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
+
+    //     while (User::where('username', $code)->exists()) {
+    //         $code = '345' . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
+    //     }
+
+    //     return $code;
+    // }
 }

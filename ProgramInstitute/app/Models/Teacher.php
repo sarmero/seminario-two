@@ -15,9 +15,10 @@ class Teacher extends Model
     public $timestamps = false;
 
     protected $fillable = [
-		'program_id',
-		'person_id'
-	];
+        'code',
+        'program_id',
+        'person_id'
+    ];
 
     public function person(): BelongsTo
     {
@@ -34,4 +35,32 @@ class Teacher extends Model
         return $this->hasMany(Programming::class);
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($teacher) {
+            $teacher->code = static::uniqueCode();
+            $person = Person::find($teacher->person_id);
+
+            User::create(
+                [
+                    'username' =>  $teacher->code,
+                    'person_id' => $teacher->person_id,
+                    'password' => bcrypt(substr($person->number_document, -4)),
+                ]
+            );
+        });
+    }
+
+    protected static function uniqueCode()
+    {
+        $code = '345' . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
+
+        while (Teacher::where('code', $code)->exists()) {
+            $code = '345' . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
+        }
+
+        return $code;
+    }
 }

@@ -53,16 +53,18 @@ class LoginController extends Controller
 
         $request->session()->regenerate();
 
+
+
         if ($person->role_id == 1) {
-            $this->dataStudent($person->id);
+            $this->dataStudent($user->person_id);
             return redirect()->route('session.home');
         } else if ($person->role_id == 3) {
-            $this->dataTeacher($person->id);
+            $this->dataTeacher($user->person_id);
             return redirect()->route('session.home');
         } else if ($person->role_id == 2) {
-            $this->dataAdmin($person->id);
+            $this->dataAdmin($user->person_id);
             session(['rol' => 'admin']);
-            return redirect()->route('admin.home');
+            return redirect()->route('admin');
         } else {
             return redirect()->route('login');
         }
@@ -128,6 +130,9 @@ class LoginController extends Controller
 
     private function dataTeacher($id)
     {
+        echo 'id: '.$id;
+        echo 'id: '.$id;
+        echo 'id: '.$id;
         $teacher = Teacher::where('person_id', $id)->get()->first();
         session(['teacher' => $teacher->id]);
 

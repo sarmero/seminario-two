@@ -40,7 +40,8 @@ class ProgramController extends Controller
     public function store(Request $request)
     {
         $validador = FacadesValidator::make($request->all(), [
-            'program' => 'required|unique:program,name|regex:/^([A-Za-zÑñ\s]*)$/|max:200',
+            'program' => 'required|unique:program,name|regex:/^([A-Za-zÑñ\s]*)$/|between:5,200',
+            'description' => 'required|regex:/^(\s*\S.*\s*)*$/|min:10',
             'image' => 'required|image|mimes:jpg,png,jpeg|max:2040',
         ]);
 
@@ -64,7 +65,8 @@ class ProgramController extends Controller
     public function update(Request $request, Program $program)
     {
         $validador = FacadesValidator::make($request->all(), [
-            'program' => 'required|regex:/^([A-Za-zÑñ\s]*)$/|max:200',
+            'program' => 'required|regex:/^([A-Za-zÑñ\s]*)$/|between:5,200',
+            'description' => 'required|regex:/^(\s*\S.*\s*)*$/|min:10',
             'image' => 'required|image|mimes:jpg,png,jpeg|max:2040',
         ]);
 
@@ -81,13 +83,13 @@ class ProgramController extends Controller
             'image' => $url,
         ]);
 
-        return redirect()->route('admin/program.index');
+        return redirect()->route('program.index');
     }
 
     public function destroy(Program $program)
     {
         $program->delete();
-        return redirect()->route('admin/program.index');
+        return redirect()->route('program.index');
     }
 
 

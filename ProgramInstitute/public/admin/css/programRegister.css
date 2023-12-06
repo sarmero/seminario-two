@@ -19,3 +19,11 @@
 .container .cont-p .form{
     margin-top: 20px;
 }
+
+#description{
+    min-height:200px;
+}
+
+.imageFile img{
+    width: 70%;
+}

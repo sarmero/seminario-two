@@ -21,6 +21,6 @@ class HomeController extends Controller
     public function index()
     {
         session(['page' => 'Inicio']);
-        return view('session.home');
+        return view('session.WelcomeSession');
     }
 }

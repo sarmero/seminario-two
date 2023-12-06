@@ -1,4 +1,3 @@
-let teacher;
 
 $(document).ready(function () {
 
@@ -9,45 +8,18 @@ $(document).ready(function () {
 
         if (program !== '') {
             $.ajax({
-                url: '/admin/subject/offer/program',
+                url: '/offer-subject/'+program,
                 type: 'GET',
-                data: { id: program },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
                 dataType: 'json',
                 success: function (response) {
 
                     if (response.offer.length > 0) {
                         $('#tableBody').html('<tbody id="tableBody"></tbody>');
                         obtain_data_table(response.offer);
-
                     }
-
-                    if (response.subject.length > 0) {
-                        $('#subject').html('<option value="">Choose...</option>');
-
-                        $.each(response.subject, function (index, item) {
-                            $('#subject').append('<option value="' + item.id + '">' + item.description + '</option>');
-                        });
-                    }
-
-                    if (response.teacher.length > 0) {
-                        teacher = response.teacher;
-                        $('#teacher').html('<option value="">Choose...</option>');
-                        $('#teacherx').html('<option value="">Choose...</option>');
-
-                        $.each(teacher, function (index, item) {
-                            $('#teacher').append('<option value="' + item.teacher + '">' + item.first_name + ' ' + item.last_name + '</option>');
-                            $('#teacherx').append('<option value="' + item.teacher + '">' + item.first_name + ' ' + item.last_name + '</option>');
-                        });
-                    }
-
-                    if (response.name != null) {
-                        $('#nameProgram').html('');
-                        title = document.querySelector('#nameProgram');
-                        const cont = document.createElement('h3');
-                        cont.textContent = response.name.name;
-                        title.appendChild(cont);
-                    }
-
                 },
                 error: function (xhr, status, error) {
                     console.log(error);
@@ -73,6 +45,7 @@ function obtain_data_table(response) {
 
         const subject = document.createElement('td');
         const semester = document.createElement('td');
+        semester.classList.add('text-center');
         const teacher = document.createElement('td');
         const quotas = document.createElement('td');
         quotas.classList.add('text-center');
@@ -86,13 +59,9 @@ function obtain_data_table(response) {
         teacher.textContent = offer.first_name + ' ' + offer.last_name
         quotas.textContent = offer.quotas;
         opt.innerHTML = `
-        <a href="#" onclick="atualizarElementosForm('${offer.id}', '${offer.subject}');" title="editar" >
-            <i class="fas fa-edit"></i>
-        </a>
-
-        <a href="#" onclick="deleteElement(${offer.id})" title="eliminar">
-            <i class="fas fa-trash-alt"></i>
-        </a>`;
+        <a href="offer-subject/${offer.id}/edit" title="Editar"><i class="fas fa-edit mx-1"></i></a>
+                    <a href="#" onclick="deleteElement('${offer.id}');" title="Eliminar"><i class="fas fa-trash-alt"></i></a>
+        `;
 
         rowData.appendChild(ind);
         rowData.appendChild(subject);
@@ -105,43 +74,39 @@ function obtain_data_table(response) {
     });
 }
 
-
-
 function deleteElement(id) {
-    if (confirm('¿Estás seguro de que quieres eliminar esta oferta?')) {
-        $.ajax({
-            type: 'DELETE',
-            url: '/admin/subject/offer/' + id,
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function (response) {
-                console.log(response);
-            },
-            error: function (error) {
-                console.error('Error en la solicitud Ajax:', error);
-            }
-        });
-    }
+
+    $('#staticBackdropLabel').html('');
+    title = document.querySelector('#staticBackdropLabel');
+    title.textContent = 'Eliminar Oferta';
+
+    $('#message').html('');
+    message = document.querySelector('#message');
+    message.textContent = '¿Estas seguro que deseas Eliminar esta Oferta?';
+
+    form = document.querySelector('#delete');
+    form.setAttribute('action', 'offer-subject/' + id);
+
+    $('#deleteModal').modal('show');
 }
 
 
-function atualizarElementosForm(id, subject) {
+// function atualizarElementosForm(id, subject) {
 
-    $('#nameSubject').html('');
-    title = document.querySelector('#nameSubject');
-    const cont = document.createElement('h3');
-    cont.setAttribute('style', 'width:100%;');
-    cont.textContent = subject;
-    title.appendChild(cont);
+//     $('#nameSubject').html('');
+//     title = document.querySelector('#nameSubject');
+//     const cont = document.createElement('h3');
+//     cont.setAttribute('style', 'width:100%;');
+//     cont.textContent = subject;
+//     title.appendChild(cont);
 
 
-    form = document.querySelector('#update');
-    form.setAttribute('action', '/admin/subject/offer/update/' + id);
+//     form = document.querySelector('#update');
+//     form.setAttribute('action', '/admin/subject/offer/update/' + id);
 
-    $('#actualizarModal').modal('show');
+//     $('#actualizarModal').modal('show');
 
-}
+// }
 
 
 

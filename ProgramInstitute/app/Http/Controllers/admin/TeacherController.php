@@ -17,50 +17,62 @@ use Illuminate\Support\Facades\Validator;
 class TeacherController extends Controller
 {
     private $program;
+    private  $district;
 
     public function __construct()
     {
         $this->program = Program::select('program.id', 'program.name')
             ->orderBy('name', 'desc')->get();
+
+        $this->district = district::get();
     }
 
 
     public function index()
     {
-        $district = district::get();
-        return view('admin.teacherRegister', ['program' => $this->program, 'district' => $district]);
+        return view('admin.teacher.AdminTeacher', ['program' => $this->program]);
     }
 
-    public function teacher(Request $request)
+    public function create()
     {
-        $pro = $request->input('program');
+        return view('admin.teacher.CreateTeacher', ['program' => $this->program, 'district' => $this->district]);
+    }
 
-        $teacher = Teacher::select('person.id', 'person.first_name', 'person.last_name', 'teacher.id as teacher')
+    public function edit($id)
+    {
+        $teacher = Teacher::select('person.*','teacher.id as idt','teacher.program_id','contact.email','contact.phone')
+        ->join('person', 'person.id', '=', 'teacher.person_id')
+        ->join('contact', 'person.contact_id', '=', 'contact.id')
+        ->where('teacher.id', $id)
+        ->get()
+        ->first();
+
+        return view('admin.teacher.EditTeacher', ['teacher' => $teacher,'program' => $this->program, 'district' => $this->district]);
+    }
+
+    public function show($id)
+    {
+        $teacher = Teacher::select('person.id as idp', 'person.first_name', 'person.last_name', 'teacher.id','teacher.code')
             ->join('person', 'person.id', '=', 'teacher.person_id')
-            ->where('program_id', $pro)
+            ->where('program_id', $id)
             ->orderBy('person.first_name', 'asc')
             ->get();
 
-        $nameProgram = Program::where('id', $pro)
+        $nameProgram = Program::where('id', $id)
             ->select('program.name')
             ->get()
             ->first();
 
-        return view('admin.teacher', ['program' => $this->program, 'teacher' => $teacher, 'name' => $nameProgram]);
-    }
-
-    public function show()
-    {
-        return view('admin.teacher', ['program' => $this->program]);
+        return response()->json(['teacher' => $teacher, 'name' => $nameProgram]);
     }
 
     public function store(Request $request)
     {
         $validador = Validator::make($request->all(), [
-            'document' => 'required|unique:person,number_document|max:10',
+            'document' => 'required|integer|unique:person,number_document|min:10',
             'firstName' => 'required|regex:/^([A-Za-zÑñ\s]*)$/|between:3,200',
             'lastName' => 'required|regex:/^([A-Za-zÑñ\s]*)$/|between:3,200',
-            'phone' => 'required|max:10',
+            'phone' => 'required|integer|min:10',
             'mail' => 'required|email|unique:contact,email|max:200',
             'photo' => 'required|image|mimes:jpg,png,jpeg|max:2040',
         ]);
@@ -69,8 +81,8 @@ class TeacherController extends Controller
             return redirect()->back()->withErrors($validador)->withInput();
         }
 
-        $url = time() . '.' . $request->image->extension();
-        $request->image->move(public_path('storage/profile'), $url);
+        $url = time() . '.' . $request->photo->extension();
+        $request->photo->move(public_path('storage/profile'), $url);
 
         $contact = Contact::create([
             'email' => $request->mail,
@@ -94,7 +106,51 @@ class TeacherController extends Controller
         ]);
 
 
-        return  redirect()->route('admin.teacher');
+        return  redirect()->route('teacher.index');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validador = Validator::make($request->all(), [
+            'document' => 'required|integer|min:10',
+            'firstName' => 'required|regex:/^([A-Za-zÑñ\s]*)$/|between:3,200',
+            'lastName' => 'required|regex:/^([A-Za-zÑñ\s]*)$/|between:3,200',
+            'phone' => 'required|integer|min:10',
+            'mail' => 'required|email|max:200',
+            'photo' => 'required|image|mimes:jpg,png,jpeg|max:2040',
+        ]);
+
+        if ($validador->fails()) {
+            return redirect()->back()->withErrors($validador)->withInput();
+        }
+
+        $url = time() . '.' . $request->photo->extension();
+        $request->photo->move(public_path('storage/profile'), $url);
+
+        $teacher = Teacher::find($id);
+        $person = person::find($teacher->person_id);
+        $contact = Contact::find($person->contact_id);
+
+        $contact->update([
+            'email' => $request->mail,
+            'phone' => $request->phone,
+        ]);
+
+        $person->update([
+            'number_document' => $request->document,
+            'first_name' => $request->firstName,
+            'last_name' => $request->lastName,
+            'gender' => $request->gender,
+            'district_id' => $request->district,
+            'photo' => $url,
+        ]);
+
+        $teacher->update([
+            'program_id' => $request->program,
+        ]);
+
+
+        return  redirect()->route('teacher.index');
     }
 
 
@@ -116,23 +172,13 @@ class TeacherController extends Controller
             ->get()
             ->first();
 
-        return view('admin.userDetail', ['person' => $person]);
+        return view('admin.usersDetail.UserDetail', ['person' => $person]);
     }
 
-    public function delete($id)
+    public function destroy($id)
     {
         Teacher::destroy($id);
-        return response()->json(['mensaje' => 'Elemento eliminado correctamente ']);
+        return  redirect()->route('teacher.index');
     }
 }
 
-
-// $user->password = bcrypt($request->input('password'));
-        //<img src="data:image/jpeg;base64,{{ base64_encode($persona->foto) }}" alt="Foto de la persona">
-
-        // if ($request->hasFile('photo')) {
-        //     $imageName = time() . '.' . $request->image->extension();
-        //     $file = $request->file('photo');
-        //     $path = $file->store('public/image/profile/users');
-        //     $url = Storage::url($path);
-        // }

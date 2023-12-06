@@ -6,14 +6,16 @@ $(document).ready(function () {
 
         if (calendar !== '') {
             $.ajax({
-                url: '/admin/student/program',
+                url: '/student/program/'+calendar,
                 type: 'GET',
-                data: { id: calendar },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
                 dataType: 'json',
                 success: function (response) {
                     if (response.program.length > 0) {
 
-                        $('#program').html('<option value="">Choose...</option>');
+                        $('#program').html('<option value="">Elije...</option>');
 
                         $.each(response.program, function (index, item) {
                             $('#program').append('<option value="' + item.id + '">' + item.name + '</option>');
@@ -34,9 +36,11 @@ $(document).ready(function () {
 
         if (program !== '') {
             $.ajax({
-                url: '/admin/student/student',
+                url: '/student/'+program,
                 type: 'GET',
-                data: { id: program },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
                 dataType: 'json',
                 success: function (response) {
                     if (response.student.length > 0) {
@@ -57,7 +61,7 @@ $(document).ready(function () {
         $.each(response, function (index, student) {
 
             const rowData = document.createElement('tr');
-            
+
             const ind = document.createElement('td');
             ind.classList.add('text-center');
             ind.setAttribute('scope', 'row');
@@ -76,8 +80,10 @@ $(document).ready(function () {
             name.textContent = student.first_name;
             last.textContent = student.last_name;
             opt.innerHTML = `
-            <a href="/admin/student/person/ ${student.id}" title="descripcion" target="_blank"><i class="fas fa-eye"></i></a>`;
-
+                <a href="/admin/student/person/ ${student.id}" title="descripcion" target="_blank"><i class="fas fa-eye"></i></a>
+                <a href="/student/${student.ids}/edit" title="Editar"><i class="fas fa-edit mx-1"></i></a>
+                <a href="#" onclick="deleteElement('${student.ids}');" title="Eliminar"><i class="fas fa-trash-alt"></i></a>
+            `;
 
             rowData.appendChild(ind);
             rowData.appendChild(cod);
@@ -93,3 +99,19 @@ $(document).ready(function () {
 
 
 });
+
+function deleteElement(id) {
+
+    $('#staticBackdropLabel').html('');
+    title = document.querySelector('#staticBackdropLabel');
+    title.textContent = 'Eliminar Studiante';
+
+    $('#message').html('');
+    message = document.querySelector('#message');
+    message.textContent = '¿Estas seguro que deseas Eliminar este Estudiante?';
+
+    form = document.querySelector('#delete');
+    form.setAttribute('action', 'student/' + id);
+
+    $('#deleteModal').modal('show');
+}

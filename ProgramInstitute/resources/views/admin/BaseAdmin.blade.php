@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('start/css/footer.css') }}">
     <link rel="stylesheet" href="{{ asset('session/css/navigation.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('js/bootstrap.min.js') }}"></script>
     @yield('style')
 </head>
@@ -28,48 +29,25 @@
 
             <div class="cont">
                 <ul>
-                    {{-- <li><a href="{{ route('admin.home') }}">Inicio</a></li> --}}
+                    <li><a href="{{ route('admin') }}">Inicio</a></li>
+                    <li><a href="{{ route('admissions.index') }}">Admisiones</a></li>
+                    <li><a href="{{ route('program.index') }}">Programas</a></li>
+                    <li><a href="{{ route('subject.index') }}">Asignaturas</a></li>
+                    <li><a href="{{ route('teacher.index') }}">Docentes</a></li>
+                    <li><a href="{{ route('student.index') }}">Estudiante</a></li>
+
+
 
                     <li class="nav-item dropdown">
                         <a id="navbarDropdown" class=" dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false" v-pre>
-                            Programas
+                           Ofertas
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{{ route('program.index') }}">Lista</a>
-                            {{-- <a class="dropdown-item" href="{{ route('admin.program.offer') }}">Oferta</a>
-                            <a class="dropdown-item" href="{{ route('admin.program.register') }}">Registrar</a> --}}
-                        </div>
+                            <a class="dropdown-item" href="{{ route('offer-program.index') }}">Programa</a>
+                            <a class="dropdown-item" href="{{ route('offer-subject.index') }}">Asignaturas</a>
 
-                    </li>
-
-                    <li class="nav-item dropdown">
-                        <a id="navbarDropdown" class=" dropdown-toggle" href="#" role="button"
-                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                            Asignaturas
-                        </a>
-
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            {{-- <a class="dropdown-item" href="{{ route('admin.subject') }}">lista</a>
-                            <a class="dropdown-item" href="{{ route('admin.subject.offer') }}">Oferta</a>
-                            <a class="dropdown-item" href="{{ route('admin.subject.register') }}">Registrar</a> --}}
-                        </div>
-
-                    </li>
-
-                    {{-- <li><a href="{{ route('admin.admission') }}">Admisiones</a></li>
-                    <li><a href="{{ route('admin.student') }}">Estudiantes</a></li> --}}
-
-                    <li class="nav-item dropdown">
-                        <a id="navbarDropdown" class=" dropdown-toggle" href="#" role="button"
-                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                            Docente
-                        </a>
-
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            {{-- <a class="dropdown-item" href="{{ route('admin.teacher') }}">lista</a>
-                            <a class="dropdown-item" href="{{ route('admin.teacher.register') }}">Registrar</a> --}}
                         </div>
 
                     </li>

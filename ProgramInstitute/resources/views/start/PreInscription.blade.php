@@ -1,7 +1,8 @@
-@extends('layouts.app')
+@extends('start.BaseStart')
 
 @section('style')
     <link rel="stylesheet" href="{{ asset('start/css/preinscription.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @endsection
 
 @section('title')
@@ -33,7 +34,9 @@
                                                 alt="gandalf">
                                                 <option value="">Elejir...</option>
                                                 @foreach ($program as $pro)
-                                                    <option value="{{ $pro->id }}">{{ $pro->name }}
+                                                    <option value="{{ $pro->id }}"
+                                                        {{ old('program') == $pro->id ? 'selected' : '' }}>
+                                                        {{ $pro->name }}>{{ $pro->name }}
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -43,7 +46,7 @@
                                         <div class="col-sm-6">
                                             <label for="firstName" class="form-label">Nombre:</label>
                                             <input type="text" class="form-control" name="firstName" id="firstName"
-                                                placeholder="" value="{{ old('firstName') }}" required>
+                                                placeholder="" value="{{ old('firstName') }}">
                                             @error('firstName')
                                                 <div class="alert alert-danger">{{ $message }}</div>
                                             @enderror
@@ -52,7 +55,7 @@
                                         <div class="col-sm-6">
                                             <label for="lastName" class="form-label">Apellido:</label>
                                             <input type="text" class="form-control" name="lastName" id="lastName"
-                                                placeholder="" value="{{ old('lastName') }}" required>
+                                                placeholder="" value="{{ old('lastName') }}">
                                             @error('lastName')
                                                 <div class="alert alert-danger">{{ $message }}</div>
                                             @enderror
@@ -69,11 +72,12 @@
 
                                         <div class="col-sm-4">
                                             <label for="gender" class="form-label">Genero:</label>
-                                            <select class="form-select" name="gender" id="gender" required
-                                                alt="gandalf">
+                                            <select class="form-select" name="gender" id="gender" alt="gandalf">
                                                 <option value="">Elejir...</option>
-                                                <option value="M">Masculino</option>
-                                                <option value="F">Femenino</option>
+                                                <option value="M" {{ old('gender') == 'M' ? 'selected' : '' }}>
+                                                    Masculino</option>
+                                                <option value="F" {{ old('gender') == 'F' ? 'selected' : '' }}>
+                                                    Femenino</option>
                                             </select>
 
                                         </div>
@@ -81,7 +85,7 @@
                                         <div class="col-sm-4">
                                             <label for="phone" class="form-label">Celular:</label>
                                             <input type="number" class="form-control" name="phone" id="phone"
-                                                placeholder="" value="{{ old('phone') }}" required>
+                                                placeholder="" value="{{ old('phone') }}">
                                             @error('phone')
                                                 <div class="alert alert-danger">{{ $message }}</div>
                                             @enderror
@@ -89,11 +93,12 @@
 
                                         <div class="col-sm-3">
                                             <label for="district" class="form-label">Barrio:</label>
-                                            <select class="form-select" name="district" id="district" required
-                                                alt="gandalf">
+                                            <select class="form-select" name="district" id="district" alt="gandalf">
                                                 <option value="">Elejir...</option>
                                                 @foreach ($district as $dis)
-                                                    <option value="{{ $dis->id }}">{{ $dis->description }}
+                                                    <option value="{{ $dis->id }}"
+                                                        {{ old('district') == $dis->id ? 'selected' : '' }}>
+                                                        {{ $dis->description }}
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -102,7 +107,7 @@
                                         <div class="col-sm-3">
                                             <label for="document" class="form-label">N. de Identificacion:</label>
                                             <input type="text" class="form-control" name="document" id="document"
-                                                placeholder="" value="{{ old('document') }}" required>
+                                                placeholder="" value="{{ old('document') }}">
                                             @error('document')
                                                 <div class="alert alert-danger">{{ $message }}</div>
                                             @enderror
@@ -110,9 +115,21 @@
 
                                         <div class="col-sm-6">
                                             <label for="photo" class="form-label">Foto:</label>
-                                            <input type="file" class="form-control" name="photo"
-                                                id="photo"required>
+                                            <input type="file" class="form-control" name="photo" id="customFile">
+
+                                            @error('photo')
+                                                <div class="alert alert-danger">{{ $message }}</div>
+                                            @enderror
                                         </div>
+
+                                        <div class="col-sm-12 imageFile">
+                                            <div class="mb-3 d-flex justify-content-center">
+                                                <img name="image" id="preview-image-before-upload"
+                                                    src="{{ asset('image/upload-image.png') }}"
+                                                    alt="Previsualizar imagen" class="image-preview">
+                                            </div>
+                                        </div>
+
 
                                     </div>
 
@@ -130,5 +147,16 @@
             </div>
         </div>
     </div>
-    <script src="{{ asset('js/checkout.js') }}"></script>
+
+    <script>
+        $(document).ready(function(e) {
+            $('#customFile').change(function() {
+                let reader = new FileReader();
+                reader.onload = (e) => {
+                    $('#preview-image-before-upload').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(this.files[0]);
+            });
+        });
+    </script>
 @endsection

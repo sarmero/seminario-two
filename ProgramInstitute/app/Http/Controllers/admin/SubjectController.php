@@ -13,82 +13,97 @@ use Illuminate\Support\Facades\Validator;
 
 class SubjectController extends Controller
 {
+    private $program;
+    private $semester;
+
+    public function __construct()
+    {
+        $this->program = Program::select('program.id', 'program.name')
+            ->orderBy('name', 'desc')
+            ->get();
+
+        $this->semester = Semester::get();
+    }
+
     public function index()
     {
-        $program = Program::select('program.id', 'program.name')
-            ->orderBy('name', 'desc')
-            ->get();
-
-        $semester = Semester::get();
-
-        return view('admin.subjectRegister', ['program' => $program, 'semester' => $semester]);
+        return view('admin.subject.AdminSubject', ['program' => $this->program]);
     }
 
-    public function show()
+    public function create()
     {
-        $semester = Semester::get();
-        $program = Program::select('program.id', 'program.name')
-            ->orderBy('name', 'desc')
-            ->get();
-
-        return view('admin.Subject', ['program' => $program, 'semester' => $semester]);
+        return view('admin.subject.CreateSubject', ['program' => $this->program, 'semester' => $this->semester]);
     }
 
-    public function subject(Request $request)
+    public function edit($id)
     {
-        $pro = $request->input('program');
+        $subject = Subject::find($id);
+        return view('admin.subject.EditSubject', ['subject'=>$subject,'program' => $this->program, 'semester' => $this->semester]);
+    }
+
+    public function show($id)
+    {
         $semester = Semester::get();
 
-        $subject = Subject::where('program_id', $pro)
+        $subject = Subject::where('program_id', $id)
             ->orderBy('semester_id', 'asc')
             ->orderBy('description', 'asc')
             ->get();
 
-        $program = Program::select('program.id', 'program.name')
-            ->orderBy('name', 'desc')
-            ->get();
-
-        $nameProgram = Program::where('id', $pro)
+        $nameProgram = Program::where('id', $id)
             ->select('program.name')
             ->get()
             ->first();
 
-        return view('admin.Subject', ['program' => $program, 'subject' => $subject, 'name' => $nameProgram, 'semester' => $semester]);
+        return response()->json(['subject' => $subject, 'name' => $nameProgram, 'semester' => $semester]);
     }
 
     public function store(Request $request)
     {
         $validador = Validator::make($request->all(), [
-            'subject' => 'required|alpha|max:200',
+            'subject' => 'required|regex:/^([A-Za-zÑñ\s]*)$/|between:5,200',
+            'program' => 'required',
+            'semester' => 'required',
         ]);
 
         if ($validador->fails()) {
             return redirect()->back()->withErrors($validador)->withInput();
         }
 
-        $subject = new Subject();
-        $subject->description = $request->input('subject');
-        $subject->program_id = $request->input('program');
-        $subject->semester_id = $request->input('semester');
-        $subject->save();
+        Subject::create([
+            'description' => $request->subject,
+            'program_id' => $request->program,
+            'semester_id' => $request->semester,
+        ]);
 
-        return redirect()->route('admin.subject');
+        return redirect()->route('subject.index');
     }
 
     public function update(Request $request, $id)
     {
+        $validador = Validator::make($request->all(), [
+            'subject' => 'required|regex:/^([A-Za-zÑñ\s]*)$/|between:5,200',
+            'program' => 'required',
+            'semester' => 'required',
+        ]);
+
+        if ($validador->fails()) {
+            return redirect()->back()->withErrors($validador)->withInput();
+        }
+
         $subject = Subject::find($id);
-        $subject->description = $request->input('subject');
-        $subject->semester_id = $request->input('semester');
 
-        $subject->save();
-
-        return redirect()->route('admin.subject');
+        $subject->update([
+            'subject' => $request->subject,
+            'program' => $request->program,
+            'semester' => $request->semester,
+        ]);
+        return redirect()->route('subject.index');
     }
 
-    public function delete($id)
+    public function destroy($id)
     {
         Subject::destroy($id);
-        return response()->json(['mensaje' => 'Elemento eliminado correctamente ']);
+        return redirect()->route('subject.index');
     }
 }

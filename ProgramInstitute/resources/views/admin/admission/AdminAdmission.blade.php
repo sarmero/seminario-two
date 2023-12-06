@@ -2,7 +2,6 @@
 
 @section('style')
     <link rel="stylesheet" href="{{ asset('admin/css/admission.css') }}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @endsection
 
 @section('title')
@@ -10,38 +9,29 @@
 @endsection
 
 @section('content')
+    @isset($name)
+    @endisset
+
     <div class="container">
         <div class="cont-p">
             <div class="title">
                 <div class="tit">Admision</div>
             </div>
 
-            <form action="{{ route('admin.admission.program') }}" method="POST">
-                @csrf
-                <div class="semester">
-                    <label for="program" class="form-label">Programa:</label>
-                    <select class="form-select" name="program" id="program" required alt="gandalf">
-                        <option value="">Choose...</option>
-                        @foreach ($program as $pro)
-                            <option value="{{ $pro->id }}">{{ $pro->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-            </form>
+            <div>
+                <label for="program" class="form-label">Programa:</label>
+                <select class="form-select" name="program" id="program" required alt="gandalf">
+                    <option value="">Choose...</option>
+                    @foreach ($program as $pro)
+                        <option value="{{ $pro->id }}">{{ $pro->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-            <script>
-                document.getElementById('program').addEventListener('change', function() {
-                    this.form.submit();
-                });
-            </script>
 
-            <div class="program my-4 text-center">
-                @isset($name)
-                    <h3>{{ $name->name }}
-                        <br> <span>Cupos: {{ $name->quotas }} | Solicitudes: {{ $requests }}</span>
-                    </h3>
-                @endisset
+            <div class="program-name my-4 text-center">
+
             </div>
 
             <div class="accordion accordion-flush" id="accordionExample">
@@ -49,170 +39,95 @@
                     <h2 class="accordion-header">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            Pendientes ( @isset($earrings)
-                                {{ count($earrings) }}
-                            @endisset )
+                            <div id="one">Aprobados</div>
                         </button>
                     </h2>
                     <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
                         <div class="accordion-body">
-                            @isset($earrings)
-                                <div class="table-responsive">
-                                    <table class="table table-striped table table-bordered align-middle">
-                                        <thead class="">
-                                            <tr>
-                                                <th class="text-center" scope="col">#</th>
-                                                <th scope="col">Nombre</th>
-                                                <th scope="col">Apellido</th>
-                                                <th class="text-center" scope="col">opcion</th>
-                                            </tr>
-                                        </thead>
 
-                                        <tbody>
-                                            @foreach ($earrings as $i => $item)
-                                                <tr>
-                                                    <td class="text-center">{{ $i + 1 }}</td>
+                            <div class="table-responsive">
+                                <table class="table table-striped table table-bordered align-middle">
+                                    <thead class="">
+                                        <tr>
+                                            <th class="text-center" scope="col">#</th>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col">Apellido</th>
+                                            <th class="text-center" scope="col">opcion</th>
+                                        </tr>
+                                    </thead>
 
-                                                    <td>{{ $item->first_name }}</td>
+                                    <tbody id="tableBodyApproved">
+                                    </tbody>
 
-                                                    <td> {{ $item->last_name }}</td>
+                                </table>
+                            </div>
 
-                                                    <td class="text-center">
-                                                        <div class="icon">
-                                                            <a href="{{ route('admin.admission.person', $item->id) }}"
-                                                                title="descripcion" target="_blank"><i
-                                                                    class="fas fa-eye"></i></a>
-                                                            <a type="button"
-                                                                href="{{ route('admin.admission.option', ['state' => 1, 'id' => $item->id, 'pro' => $item->pro]) }}"
-                                                                title="Aprobar"><i class="fas fa-check-circle"></i></a>
-                                                            <a href="{{ route('admin.admission.option', ['state' => 3, 'id' => $item->id, 'pro' => $item->pro]) }}"
-                                                                title="Rechazar"><i class="fas fa-times-circle"></i></a>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            @endisset
                         </div>
                     </div>
                 </div>
+
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                            Aprobados ( @isset($approved)
-                                {{ count($approved) }}
-                            @endisset )
+                            <div id="two">Pendiente</div>
                         </button>
                     </h2>
                     <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                         <div class="accordion-body">
-                            @isset($approved)
-                                <div class="table-responsive">
-                                    <table class="table table-striped table table-bordered align-middle">
-                                        <thead class="">
-                                            <tr>
-                                                <th class="text-center" scope="col">#</th>
-                                                <th scope="col">Nombre</th>
-                                                <th scope="col">Apellido</th>
-                                                <th class="text-center" scope="col">opcion</th>
-                                            </tr>
-                                        </thead>
 
-                                        <tbody>
-                                            @foreach ($approved as $i => $item)
-                                                <tr>
-                                                    <td class="text-center">{{ $i + 1 }}</td>
+                            <div class="table-responsive">
+                                <table class="table table-striped table table-bordered align-middle">
+                                    <thead class="">
+                                        <tr>
+                                            <th class="text-center" scope="col">#</th>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col">Apellido</th>
+                                            <th class="text-center" scope="col">opcion</th>
+                                        </tr>
+                                    </thead>
 
-                                                    <td>{{ $item->first_name }}</td>
+                                    <tbody id="tableBodyEarrings">
+                                    </tbody>
 
-                                                    <td> {{ $item->last_name }}</td>
+                                </table>
+                            </div>
 
-                                                    <td class="text-center">
-                                                        <div class="icon">
-                                                            <a href="{{ route('admin.admission.person', $item->id) }}"
-                                                                target="_blank" title="descripcion"><i
-                                                                    class="fas fa-eye"></i></a>
-                                                            <a href="{{ route('admin.admission.option', ['state' => 2, 'id' => $item->id, 'pro' => $item->pro]) }}"
-                                                                title="pendiente"><i class="fas fa-minus-circle"></i></a>
-                                                            <a href="{{ route('admin.admission.option', ['state' => 3, 'id' => $item->id, 'pro' => $item->pro]) }}"
-                                                                title="Rechazar"><i class="fas fa-times-circle"></i></a>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            @endisset
                         </div>
                     </div>
                 </div>
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                            Rechazados ( @isset($rejected)
-                                {{ count($rejected) }}
-                            @endisset )
+                            data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree ">
+                            <div id="three">Rechazados</div>
                         </button>
                     </h2>
                     <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                         <div class="accordion-body">
-                            @isset($rejected)
-                                <div class="table-responsive">
-                                    <table class="table table-striped table table-bordered align-middle">
-                                        <thead class="">
-                                            <tr>
-                                                <th class="text-center" scope="col">#</th>
-                                                <th scope="col">Nombre</th>
-                                                <th scope="col">Apellido</th>
-                                                <th class="text-center" scope="col">opcion</th>
-                                            </tr>
-                                        </thead>
 
-                                        <tbody>
-                                            @foreach ($rejected as $i => $item)
-                                                <tr>
-                                                    <td class="text-center">{{ $i + 1 }}</td>
+                            <div class="table-responsive">
+                                <table class="table table-striped table table-bordered align-middle">
+                                    <thead class="">
+                                        <tr>
+                                            <th class="text-center" scope="col">#</th>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col">Apellido</th>
+                                            <th class="text-center" scope="col">opcion</th>
+                                        </tr>
+                                    </thead>
 
-                                                    <td>{{ $item->first_name }}</td>
-
-                                                    <td> {{ $item->last_name }}</td>
-
-                                                    <td class="text-center">
-                                                        <div class="icon">
-                                                            <a href="{{ route('admin.admission.person', $item->id) }}"
-                                                                target="_blank" title="descripcion"><i
-                                                                    class="fas fa-eye"></i></a>
-                                                            <a type="button"
-                                                                href="{{ route('admin.admission.option', ['state' => 1, 'id' => $item->id, 'pro' => $item->pro]) }}"
-                                                                title="Aprobar"><i class="fas fa-check-circle"></i></a>
-                                                            <a href="{{ route('admin.admission.option', ['state' => 2, 'id' => $item->id, 'pro' => $item->pro]) }}"
-                                                                title="Pendiente"><i class="fas fa-minus-circle"></i></a>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            @endisset
+                                    <tbody id="tableBodyRejected">
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <br><br>
-            <div class="text-center">
-                @isset($name)
-                    <a href="#" onclick="closeOffer('{{ $name->offer }}');" class="btn btn-primary" role="button">
-                        Cerrar oferta
-                    </a>
-                @endisset
-            </div>
+            <div class="text-center button-close"></div>
         </div>
     </div>
 
@@ -227,7 +142,7 @@
                     },
                     success: function(response) {
                         console.log(response);
-                        window.location.href = '/admin/admission';
+                        window.location.href = '/admissions';
                     },
                     error: function(error) {
                         console.error('Error en la solicitud Ajax:', error);
@@ -235,6 +150,159 @@
                 });
             }
         }
-    </script>
 
+        function updateState(state, id, pro) {
+
+            $.ajax({
+                url: '/admissions/' + id,
+                type: 'PUT',
+                data: {
+                    state: state,
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                dataType: 'json',
+                success: function(response) {
+                    console.log(response.message);
+                    window.location.href = '/admissions';
+                },
+                error: function(xhr, status, error) {
+                    console.log(error);
+                }
+            });
+
+        }
+
+        function obtain_data_table(response, tableBody, state1, state2) {
+            // const tableBody = document.querySelector('#tableBody');
+
+            let icon1;
+            let icon2
+
+            if (state1 == 2 && state2 == 3) {
+                icon1 = 'fa-minus-circle';
+                icon2 = 'fa-times-circle';
+            } else if (state1 == 1 && state2 == 3) {
+                icon1 = 'fa-check-circle';
+                icon2 = 'fa-times-circle';
+            } else if (state1 == 1 && state2 == 2) {
+                icon1 = 'fa-check-circle';
+                icon2 = 'fa-minus-circle';
+            }
+
+            $.each(response, function(index, state) {
+
+                const rowData = document.createElement('tr');
+
+                const ind = document.createElement('td');
+                ind.classList.add('text-center');
+                ind.setAttribute('scope', 'row');
+
+                const name = document.createElement('td');
+                const last = document.createElement('td');
+
+                const opt = document.createElement('td');
+                opt.classList.add('text-center');
+
+                ind.textContent = index + 1;
+                name.textContent = state.first_name;
+                last.textContent = state.last_name;
+
+                opt.innerHTML = `
+                <div class="icon">
+                    <a href="/admin/admission/person/${state.id}" target="_blank" title="descripcion"><i class="fas fa-eye"></i></a>
+                    <a href="#" onclick="updateState('${state1}', '${state.id}', '${state.pro}');" title="Aprobar"><i class="fas ${icon1}"></i></a>
+                    <a href="#"onclick="updateState('${state2}','${state.id}','${state.pro}');"title="Pendiente"><i class="fas ${icon2}"></i></a>
+                    </div>
+                            `;
+
+                rowData.appendChild(ind);
+                rowData.appendChild(name);
+                rowData.appendChild(last);
+                rowData.appendChild(opt);
+
+                tableBody.appendChild(rowData);
+            });
+        }
+
+        $(document).ready(function() {
+            $('#program').change(function() {
+                var program = $(this).val();
+
+                if (program !== '') {
+                    $.ajax({
+                        url: '/admissions/' + program,
+                        type: 'GET',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+
+
+                            $('.program-name').html('');
+                            title = document.querySelector('.program-name');
+                            cont = document.createElement('h3');
+                            cont.innerHTML =
+                                `${response.name.name}<br><span>Cupos: ${response.name.quotas}  | Solicitudes: ${response.requests} </span>`;
+                            title.appendChild(cont);
+
+                            $('.button-close').html('');
+                            btn = document.querySelector('.button-close');
+                            cont = document.createElement('div');
+                            cont.innerHTML =
+                                `<a href="#" onclick="closeOffer('${response.name.offer}');" class="btn btn-primary" role="button">Cerrar oferta</a>`;
+                            btn.appendChild(cont);
+
+
+
+                            if (response.approved.length > 0) {
+                                $('#tableBodyApproved').html('');
+                                tableBody = document.querySelector('#tableBodyApproved');
+                                obtain_data_table(response.approved, tableBody, 2, 3);
+
+                                $('#one').html('');
+                                head = document.querySelector('#one')
+                                const div = document.createElement('div');
+                                div.textContent = 'Aprobado(' + response.approved.length +
+                                    ')';
+                                head.appendChild(div);
+                            }
+
+                            if (response.earrings.length > 0) {
+                                $('#tableBodyEarrings').html('');
+                                tableBody = document.querySelector('#tableBodyEarrings');
+                                obtain_data_table(response.earrings, tableBody, 1, 3);
+
+                                $('#two').html('');
+                                head = document.querySelector('#two')
+                                const div = document.createElement('div');
+                                div.textContent = 'Pendientes(' + response.earrings.length +
+                                    ')';
+                                head.appendChild(div);
+                            }
+
+                            if (response.rejected.length > 0) {
+                                $('#tableBodyRejected').html('');
+                                tableBody = document.querySelector('#tableBodyRejected');
+                                obtain_data_table(response.rejected, tableBody, 1, 2);
+
+                                $('#three').html('');
+                                head = document.querySelector('#three')
+                                const div = document.createElement('div');
+                                div.textContent = 'Rechazados(' + response.rejected.length +
+                                    ')';
+                                head.appendChild(div);
+                            }
+
+                        },
+                        error: function(xhr, status, error) {
+                            console.log(error);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 @endsection

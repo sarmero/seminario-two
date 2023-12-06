@@ -17,3 +17,15 @@
 .container .cont-p .table-responsive{
     margin-top: 20px;
 }
+
+.fa-trash-alt{
+    color: red;
+}
+
+.fa-eye{
+    color: green;
+}
+
+.fa-edit{
+    color: blue;
+}

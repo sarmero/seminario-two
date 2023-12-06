@@ -71,3 +71,17 @@
   align-items: center;
   gap: 5px;
 }
+
+.fa-trash-alt, .fa-times-circle{
+    color: red;
+}
+
+.fa-eye{
+    color: green;
+}
+
+.fa-edit, .fa-check-circle{
+    color: blue;
+}
+
+

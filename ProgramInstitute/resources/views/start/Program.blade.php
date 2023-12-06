@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('start.BaseStart')
 
 @section('style')
     <link rel="stylesheet" href="{{ asset('start/css/program.css') }}">
@@ -21,14 +21,8 @@
                     <div class="item">
 
                         <div class="imag">
-
-                            @if ($pro->image != null)
-                                <img src="{{ asset('storage/pets/'.$pro->image) }}" alt="program"
-                                    class="d-inline-block align-text-center">
-                            @else
-                                <img src="{{ asset('image/covers/covers3.png') }}" alt="program"
-                                    class="d-inline-block align-text-center">
-                            @endif
+                            <img src="{{ asset('storage/program/' . $pro->image) }}" alt="program"
+                                class="d-inline-block align-text-center">
 
                             <div class="tex">
                                 <div class="text">{{ $pro->name }}</div>
@@ -39,7 +33,7 @@
                             <div class="subtheme">
                                 <a class="plain theme" href="{{ route('content', $pro->id) }}">Contenido</a>
                                 <a class="theme" href="{{ route('preinscription') }}">Preinscripcion</a>
-                                <div class="theme" >
+                                <div class="theme">
                                     @if ($pro->state != 0)
                                         Ofertado
                                     @else

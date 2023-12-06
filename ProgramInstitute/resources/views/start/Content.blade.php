@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('start.BaseStart')
 
 @section('style')
     <link rel="stylesheet" href="{{ asset('start/css/content.css') }}">
@@ -12,7 +12,8 @@
     <div class="container">
         <div class="cont">
             <div class="covers">
-                <img src="{{ asset($program->image) }}" alt="">
+                <img src="{{ asset('storage/program/'.$program->image) }}" alt="program"
+                                    class="d-inline-block align-text-center">
                 <div class="tex">
                     <div class="text">
                         {{ $program->name }}

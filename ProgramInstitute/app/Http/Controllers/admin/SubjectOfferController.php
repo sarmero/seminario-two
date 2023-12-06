@@ -13,29 +13,56 @@ use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 
 class SubjectOfferController extends Controller
 {
-    public function index()
+    private $program;
+    public function __construct()
     {
-
-        // $program = Offer::select('program.id', 'program.name')
-        //     ->join('program', 'offer.program_id', '=', 'program.id')
-        //     // ->where('offer.state_offer_id', '1')
-        //     // ->distinct()
-        //     ->orderBy('program.name', 'desc')
-        //     ->get();
-        $program = Program::select('program.id', 'program.name')
+        $this->program = Program::select('program.id', 'program.name')
             ->orderBy('name', 'desc')
             ->get();
-
-        return view('admin.subjectOffer', ['program' => $program]);
     }
 
-    public function programsSubject(Request $request)
+    public function index()
     {
-        $id = $request->input('id');
+        return view('admin.offerSubject.AdminOfferSubject', ['program' => $this->program]);
+    }
 
+    public function create()
+    {
+        return view('admin.offerSubject.CreateOfferSubject', ['program' => $this->program]);
+    }
+
+    public function edit($id)
+    {
+        $offer = OfferSubject::select(
+            'offer_subject.id',
+            'offer_subject.quotas',
+            'subject.description as subject',
+            'subject.program_id',
+            'programming.teacher_id',
+        )
+            ->join('subject', 'offer_subject.subject_id', '=', 'subject.id')
+            ->join('programming', 'Programming.offer_subject_id', '=', 'offer_subject.id')
+            ->where('offer_subject.id', $id)
+            ->get()
+            ->first();
+
+        $teacher = Teacher::select('person.first_name', 'person.last_name', 'teacher.id')
+            ->join('person', 'person.id', '=', 'teacher.person_id')
+            ->where('program_id', $offer->program_id)
+            ->orderBy('person.first_name', 'asc')
+            ->get();
+
+
+        return view('admin.offerSubject.EditOfferSubject', ['teacher' => $teacher, 'offer' => $offer]);
+    }
+
+
+    public function show($id)
+    {
         $offer = OfferSubject::select(
             'offer_subject.id',
             'subject.semester_id as semester',
@@ -52,9 +79,14 @@ class SubjectOfferController extends Controller
             ->where('subject.program_id', $id)
             ->get();
 
-        $teacher = Teacher::select('person.id', 'person.first_name', 'person.last_name', 'teacher.id as teacher')
+        return response()->json(['offer' => $offer]);
+    }
+
+    public function getSubjectTeacher($id)
+    {
+        $teacher = Teacher::select('person.first_name', 'person.last_name', 'teacher.id')
             ->join('person', 'person.id', '=', 'teacher.person_id')
-            ->where('program_id', $id)
+            ->where('teacher.program_id', $id)
             ->orderBy('person.first_name', 'asc')
             ->get();
 
@@ -65,62 +97,88 @@ class SubjectOfferController extends Controller
                     ->whereRaw('offer_subject.subject_id = subject.id');
             })
             ->where('subject.program_id', $id)
+            ->orderBy('subject.description', 'asc')
             ->get();
 
-        $nameProgram = Program::where('id', $id)
-            ->select('program.name')
-            ->get()
-            ->first();
-
-        return response()->json(['offer' => $offer, 'subject' => $subject, 'teacher' => $teacher, 'name' => $nameProgram]);
+        return response()->json(['subject' => $subject, 'teacher' => $teacher]);
     }
 
     public function store(Request $request)
     {
-        $offer = new OfferSubject();
-        $offer->subject_id = $request->input('subject');
-        $offer->quotas = $request->input('quotas');
-        $offer->calendar_id =  session('calendar');
-        $offer->save();
+        $validador = Validator::make($request->all(), [
+            'subject' => 'required',
+            'quotas' => 'required|integer|between:5,200',
+            'teacher' => 'required',
+        ]);
 
-        $programming = new Programming();
-        $programming->teacher_id = $request->input('teacher');
-        $programming->offer_subject_id = $offer->id;
-        $programming->save();
+        if ($validador->fails()) {
+            return redirect()->back()->withErrors($validador)->withInput();
+        }
 
-        return redirect()->route('admin.subject.offer');
+        $offer = OfferSubject::create([
+            'subject_id' => $request->subject,
+            'quotas' => $request->quotas,
+            'calendar_id' =>  session('calendar'),
+        ]);
+
+        Programming::create([
+            'teacher_id' => $request->teacher,
+            'offer_subject_id' => $offer->id,
+        ]);
+
+        return redirect()->route('offer-subject.index');
     }
 
     public function update(Request $request, $id)
     {
+        $validador = Validator::make($request->all(), [
+            'quotas' => 'required|integer|between:5,200',
+            'teacher' => 'required',
+        ]);
+
+        if ($validador->fails()) {
+            return redirect()->back()->withErrors($validador)->withInput();
+        }
+
         $offer = OfferSubject::find($id);
-        $offer->quotas = $request->input('quotas');
-        $offer->save();
+        $offer->update([
+            'quotas' => $request->quotas,
+        ]);
 
         $idp = Programming::select('id')->where('offer_subject_id', $id)->get()->first();
 
         $programming = Programming::find($idp->id);
-        $programming->teacher_id = $request->input('teacher');
-        $programming->save();
+        $programming->update([
+            'teacher_id' => $request->teacher,
+        ]);
 
-        return redirect()->route('admin.subject.offer')->with('success', 'Oferta actualizado correctamente');
+        return redirect()->route('offer-subject.index');
     }
 
 
-    public function delete($id)
+    public function destroy($id)
     {
         OfferSubject::destroy($id);
-        return response()->json(['mensaje' => 'Elemento eliminado correctamente ' . $id]);
+        return redirect()->route('offer-subject.index');
     }
 
-    public function offer(Request $request)
-    {
-        $id = $request->input('id');
-        $offer = OfferSubject::select('subject.description as subject')
-            ->join('subject', 'offer_subject.subject_id', '=', 'subject.id')
-            ->where('offer_subject.id', $id)
-            ->get()
-            ->first();
-        return response()->json(['offer' => $offer]);
-    }
 }
+
+
+     // $program = Offer::select('program.id', 'program.name')
+        //     ->join('program', 'offer.program_id', '=', 'program.id')
+        //     // ->where('offer.state_offer_id', '1')
+        //     // ->distinct()
+        //     ->orderBy('program.name', 'desc')
+        //     ->get();
+
+        // public function offer(Request $request)
+        // {
+        //     $id = $request->input('id');
+        //     $offer = OfferSubject::select('subject.description as subject')
+        //         ->join('subject', 'offer_subject.subject_id', '=', 'subject.id')
+        //         ->where('offer_subject.id', $id)
+        //         ->get()
+        //         ->first();
+        //     return response()->json(['offer' => $offer]);
+        // }

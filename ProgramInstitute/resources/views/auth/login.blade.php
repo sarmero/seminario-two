@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('auth.BaseAuth')
 
 @section('style')
     <link rel="stylesheet" href="{{ asset('start/css/login.css') }}">
@@ -9,6 +9,12 @@
 @endsection
 
 @section('content')
+    <div class="create mb-3 d-flex justify-content-end">
+        <a href="{{ route('program.create') }}" class="btn btn-primary btn-sm" role="button">
+            Atras
+        </a>
+    </div>
+
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('start.BaseStart')
 
 @section('style')
     <link rel="stylesheet" href="{{ asset('start/css/admission.css') }}">

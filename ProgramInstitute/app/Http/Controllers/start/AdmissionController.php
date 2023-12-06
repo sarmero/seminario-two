@@ -13,6 +13,13 @@ class AdmissionController extends Controller
 {
     public function index()
     {
+        session(['aceptado' => false]);
+        session(['rechazado' => false]);
+        session(['pendiente' => false]);
+        session(['noExiste' => false]);
+        session(['name' => '']);
+        session(['program' => '']);
+        
         return view('start.Admission');
     }
 

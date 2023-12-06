@@ -4,16 +4,19 @@ namespace App\Http\Controllers\auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
+use App\Models\Calendar;
 use App\Models\InscriptionSubject;
 use App\Models\News;
 use App\Models\User;
 use App\Models\Person;
 use App\Models\Student;
 use App\Models\Subject;
+use App\Models\Teacher;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -24,41 +27,45 @@ class LoginController extends Controller
 
     public function startSession(Request $request)
     {
-        $pwd = $request->input('password');
-        $usr = $request->input('user');
+        $credentials = $request->validate([
+            'username' => 'required|string|max:255|min:4',
+            'password' => 'required|string'
+        ]);
 
-        $user = User::where('user', $usr)->where('password', $pwd)
-            ->select('person_id')
-            ->get()
-            ->first();
+        // Incorrecto, genera exención y retorna al formulario de login
+        if (!Auth::attempt($credentials)) {
+            throw ValidationException::withMessages([
+                'password' => 'Autenticación incorrecta'
+            ]);
+        }
 
-        if ($user) {
+        $user = Auth::User();
+        $person = Person::find($user->person_id);
+        $calendar = Calendar::latest('id')->first();
 
-            $person = Person::find($user->person_id);
+        session(['first_name' => $person->first_name]);
+        session(['last_name' => $person->last_name]);
+        session(['role' => $person->role_id]);
+        session(['photo' => $person->photo]);
+        session(['rol' => 'users']);
+        session(['calendar' => $calendar->id]);
+        session(['navStart' => false]);
 
-            session(['session' => true]);
-            session(['first_name' => $person->first_name]);
-            session(['last_name' => $person->last_name]);
-            session(['role' => $person->role_id]);
-            session(['photo' => $person->photo]);
-            session(['rol' => 'users']);
+        $request->session()->regenerate();
 
 
-            if ($person->role_id == 1) {
-                $this->dataStudent($person->id);
-                return redirect()->route('session.home');
-            } else if ($person->role_id == 3) {
-                $this->dataTeacher($person->id);
-                return redirect()->route('session.home');
-            } else if ($person->role_id == 2) {
-                $this->dataAdmin($person->id);
-                session(['rol' => 'admin']);
-                return redirect()->route('admin.home');
-            } else {
-                return redirect()->route('login');
-            }
 
-        }else{
+        if ($person->role_id == 1) {
+            $this->dataStudent($user->person_id);
+            return redirect()->route('session.home');
+        } else if ($person->role_id == 3) {
+            $this->dataTeacher($user->person_id);
+            return redirect()->route('session.home');
+        } else if ($person->role_id == 2) {
+            $this->dataAdmin($user->person_id);
+            session(['rol' => 'admin']);
+            return redirect()->route('admin');
+        } else {
             return redirect()->route('login');
         }
     }
@@ -69,6 +76,7 @@ class LoginController extends Controller
         $student = Student::join('inscription', 'inscription.student_id', '=', 'student.id')
             ->join('offer', 'offer.id', '=', 'inscription.offer_id')
             ->join('program', 'program.id', '=', 'offer.program_id')
+            ->join('admission', 'student.admission_id', '=', 'admission.id')
             ->join('semester', 'semester.id', '=', 'student.semester_id')
             ->select(
                 'program.name as program',
@@ -79,7 +87,7 @@ class LoginController extends Controller
                 'semester.id as semester',
                 'student.id as std'
             )
-            ->where('student.person_id', $id)
+            ->where('admission.person_id', $id)
             ->get()
             ->first();
 
@@ -109,7 +117,7 @@ class LoginController extends Controller
 
         session(['program' => $student->program]);
         session(['inscription' => $student->inc]);
-        session(['program_id' => $student->std]);
+        session(['program_id' => $student->pro]);
         session(['code' => $student->code]);
         session(['semester' => $student->semester]);
         session(['subjects' => count($approved)]);
@@ -122,14 +130,37 @@ class LoginController extends Controller
 
     private function dataTeacher($id)
     {
+        echo 'id: '.$id;
+        echo 'id: '.$id;
+        echo 'id: '.$id;
+        $teacher = Teacher::where('person_id', $id)->get()->first();
+        session(['teacher' => $teacher->id]);
+
+        $news = News::orderBy("date", "asc")->get();
+        session(['news' => $news]);
+
+        $activity = Activity::join('offer_subject', 'offer_subject.id', '=', 'activity.offer_subject_id')
+            ->join('programming', 'programming.offer_subject_id', '=', 'offer_subject.id')
+            ->where('programming.teacher_id', $teacher->id)
+            ->select('activity.description', 'activity.deadline')
+            ->orderBy("activity.deadline", "asc")
+            ->get();
+
+        session(['activity' => $activity]);
     }
 
     private function dataAdmin($id)
     {
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
+        // Destruir el archivo de sesión
+        $request->session()->invalidate();
+
+        // Obtener un nuevo token
+        $request->session()->regenerateToken();
+
         Session::flush();
         return redirect()->route('home');
     }

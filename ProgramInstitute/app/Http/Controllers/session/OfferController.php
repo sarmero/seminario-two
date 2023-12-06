@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\session;
 
 use App\Http\Controllers\Controller;
+use App\Models\InscriptionSubject;
 use App\Models\OfferSubject;
 use App\Models\Subject;
 use Illuminate\Http\Request;
@@ -13,29 +14,33 @@ class OfferController extends Controller
 {
     public function index()
     {
-        if (Session::has('session')) {
-            if (session('session')) {
+        session(['page' => 'Ofertas']);
+        $inscription = session('inscription');
 
-                session(['page' => 'Ofertas']);
-                $inscription = session('inscription');
+        $offer = Subject::select('subject.description', 'offer_subject.quotas', 'offer_subject.id')
+            ->join('offer_subject', 'subject.id', '=', 'offer_subject.subject_id')
+            ->leftJoin('inscription_subject', function ($join) use ($inscription) {
+                $join->on('offer_subject.id', '=', 'inscription_subject.offer_subject_id')
+                    ->where('inscription_subject.inscription_id', '=', $inscription);
+            })
+            ->whereNull('inscription_subject.id')
+            ->selectRaw('COUNT(inscription_subject.id) as registered')
+            ->groupBy('subject.id', 'subject.description', 'offer_subject.quotas', 'offer_subject.id')
+            ->get();
 
-                $offer = Subject::select('subject.description', 'offer_subject.quotas')
-                    ->join('offer_subject', 'subject.id', '=', 'offer_subject.subject_id')
-                    ->leftJoin('inscription_subject', function ($join) use ($inscription) {
-                        $join->on('offer_subject.id', '=', 'inscription_subject.offer_subject_id')
-                            ->where('inscription_subject.inscription_id', '=', $inscription);
-                    })
-                    ->whereNull('inscription_subject.id')
-                    ->selectRaw('COUNT(inscription_subject.id) as registered')
-                    ->groupBy('subject.id', 'subject.description', 'offer_subject.quotas')
-                    ->get();
+        return view('session.offer', ['offer' => $offer]);
+    }
 
-                return view('session.offer', ['offer' => $offer]);
-            } else {
-                return redirect()->route('login');
-            }
-        } else {
-            return redirect()->route('home');
-        }
+    public function inscrition(Request $request)
+    {
+        $id = $request->input('id');
+
+        $ins = new InscriptionSubject();
+        $ins->offer_subject_id = $id;
+        $ins->inscription_id = session('inscription');
+
+        $ins->save();
+
+        return response()->json(['mensaje' => 'Inscription realizada correctamente ']);
     }
 }

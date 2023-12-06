@@ -6,55 +6,48 @@ use App\Http\Controllers\Controller;
 use App\Models\Admission;
 use App\Models\Offer;
 use App\Models\Program;
+use App\Models\Student;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
 class AdmissionController extends Controller
 {
+    private $program;
+
+    public function __construct()
+    {
+        $this->program = Offer::select('program.id', 'program.name')
+            ->join('program', 'offer.program_id', '=', 'program.id')
+            ->where('offer.state_offer_id', '1')
+            ->orderBy('program.name', 'desc')
+            ->get();
+    }
 
     public function index()
     {
-        session(['session' => true]);
-        if (Session::has('session')) {
-            if (session('session')) {
-                $program = $this->program();
-
-                return view('admin.admission', ['program' => $program]);
-            } else {
-                return redirect()->route('login');
-            }
-        } else {
-            return redirect()->route('home');
-        }
+        return view('admin.admission.AdminAdmission', ['program' => $this->program]);
     }
 
 
-    public function admission(Request $request)
+    public function show($id)
     {
-        $pro = $request->input('program');
-        return $this->admissionProgram($pro);
-    }
+        $approved = $this->admissionData(1, $id);
+        $earrings = $this->admissionData(2, $id);
+        $rejected = $this->admissionData(3, $id);
 
-    private function admissionProgram($pro)
-    {
-        $approved = $this->admissionData(1, $pro);
-        $earrings = $this->admissionData(2, $pro);
-        $rejected = $this->admissionData(3, $pro);
-
-        $nameProgram = Offer::select('offer.quotas', 'program.name')
+        $nameProgram = Offer::select('offer.quotas', 'program.name', 'offer.id as offer')
             ->join('program', 'offer.program_id', '=', 'program.id')
-            ->where('program.id', $pro)
+            ->where('program.id', $id)
             ->get()
             ->first();
 
-        $program = $this->program();
-
         $requests = Admission::join('offer', 'admission.offer_id', '=', 'offer.id')
-            ->where('offer.program_id', $pro)
+            ->where('offer.program_id', $id)
             ->count();
 
-        return view('admin.admission', [
-            'program' => $program,
+        return response()->json( [
+            'program' => $this->program,
             'name' => $nameProgram,
             'approved' => $approved,
             'rejected' => $rejected,
@@ -73,23 +66,14 @@ class AdmissionController extends Controller
             ->get();
     }
 
-    public function update($state, $id, $pro)
+    public function update(Request $request, $id,)
     {
         $admission = Admission::find($id);
-        $admission->state_id = $state;
-        $admission->save();
-        return $this->admissionProgram($pro);
-    }
+        $admission->update([
+            'state_id' =>  $request->state,
+        ]);
 
-    private function program()
-    {
-        $program = Offer::select('program.id', 'program.name')
-            ->join('program', 'offer.program_id', '=', 'program.id')
-            ->where('offer.state_offer_id', '1')
-            ->orderBy('program.name', 'desc')
-            ->get();
-
-        return $program;
+        return response()->json(['message'=>'Atualizado..!']);
     }
 
     public function showPerson($id)
@@ -116,6 +100,16 @@ class AdmissionController extends Controller
             ->get()
             ->first();
 
-        return view('admin.userDetail', ['person' => $person]);
+        return view('admin.usersDetail.UserDetail', ['person' => $person]);
+    }
+
+    public function closeOffer($id)
+    {
+        $offer = Offer::find($id);
+        $offer->update([
+            'state_offer_id' => 2,
+        ]);
+
+        return response()->json(['mensaje' => 'Elemento eliminado correctamente ']);
     }
 }

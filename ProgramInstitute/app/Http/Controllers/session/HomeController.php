@@ -20,16 +20,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        if (Session::has('session')) {
-            if (session('session')) {
-                session(['page' => 'Inicio']);
-                return view('session.home');
-            } else {
-                return redirect()->route('login');
-            }
-        } else {
-            return redirect()->route('home');
-        }
+        session(['page' => 'Inicio']);
+        return view('session.WelcomeSession');
     }
-    
 }

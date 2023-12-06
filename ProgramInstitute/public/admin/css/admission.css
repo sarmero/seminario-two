@@ -29,3 +29,7 @@
   font-size: 14px;
   color: darkcyan;
 }
+
+.container .cont-p .program{
+    min-height: 40px;
+}

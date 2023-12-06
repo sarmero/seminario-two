@@ -11,6 +11,8 @@ use App\Models\District;
 use App\Models\Offer;
 use App\Models\Program;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+
 
 class PreinscriptionController extends Controller
 {
@@ -29,49 +31,44 @@ class PreinscriptionController extends Controller
 
     public function store(Request $request)
     {
-        $person = new person();
-        $person->number_document = $request->input('document');
-        $person->first_name = $request->input('firstName');
-        $person->last_name = $request->input('lastName');
-        $person->gender = $request->input('gender');
-        $person->contact_id = $this->contact($request->input('phone'), $request->input('mail'));
-        $person->district_id = $request->input('district');
-        $person->role_id = 1;
+        $validador = Validator::make($request->all(), [
+            'document' => 'required|integer|unique:person,number_document|min:10',
+            'firstName' => 'required|regex:/^([A-Za-zÑñ\s]*)$/|between:3,200',
+            'lastName' => 'required|regex:/^([A-Za-zÑñ\s]*)$/|between:3,200',
+            'phone' => 'required|integer|min:10',
+            'mail' => 'required|email|unique:contact,email|max:200',
+            'photo' => 'required|image|mimes:jpg,png,jpeg|max:2040',
+        ]);
 
-
-        if ($request->hasFile('photo')) {
-            $file = $request->file('photo');
-            $path = $file->store('public/image/profile/users');
-            $url = Storage::url($path);
-            $person->photo = $url;
+        if ($validador->fails()) {
+            return redirect()->back()->withErrors($validador)->withInput();
         }
 
-        // $user->password = bcrypt($request->input('password'));
-        //<img src="data:image/jpeg;base64,{{ base64_encode($persona->foto) }}" alt="Foto de la persona">
+        $url = time() . '.' . $request->photo->extension();
+        $request->photo->move(public_path('storage/profile'), $url);
 
-        $person->save();
+        $contact = Contact::create([
+            'email' => $request->mail,
+            'phone' => $request->phone,
+        ]);
 
-        $offer = $request->input('program');
-        $this->admission($person->id, $offer);
+        $person = person::create([
+            'number_document' => $request->document,
+            'first_name' => $request->firstName,
+            'last_name' => $request->lastName,
+            'gender' => $request->gender,
+            'contact_id' => $contact->id,
+            'district_id' => $request->district,
+            'role_id' => 3,
+            'photo' => $url,
+        ]);
+
+        Admission::create([
+            'state_id' => '1',
+            'person_id' => $person->id,
+            'offer_id' => $request->program,
+        ]);
 
         return  redirect()->route('home');
-    }
-
-    private function contact($phone, $mail)
-    {
-        $contact = new Contact();
-        $contact->email = $mail;
-        $contact->phone = $phone;
-        $contact->save();
-        return $contact->id;
-    }
-
-    private function admission($id, $offer)
-    {
-        $admission = new Admission();
-        $admission->state_id = 1;
-        $admission->person_id = $id;
-        $admission->offer_id = $offer;
-        $admission->save();
     }
 }

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Admission extends Model
 {
@@ -11,19 +13,28 @@ class Admission extends Model
     protected $table = 'admission';
     public $timestamps = false;
 
-    protected $fillable = ['state_id', 'person_id','offer_id'];
+    protected $fillable = [
+        'state_id',
+        'person_id',
+        'offer_id'
+    ];
 
-    public function state()
+    public function state(): BelongsTo
     {
         return $this->belongsTo(State::class);
     }
 
-    public function person()
+    public function person(): BelongsTo
     {
-        return $this->hasOne(Person::class);
+        return $this->belongsTo(Person::class);
     }
 
-    public function offer()
+    public function student(): HasOne
+    {
+        return $this->hasOne(Student::class);
+    }
+
+    public function offer(): BelongsTo
     {
         return $this->belongsTo(Offer::class);
     }

@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ asset('start/css/footer.css') }}">
     <link rel="stylesheet" href="{{ asset('session/css/navigation.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{-- <script src="{{ asset('js/jquery.min.js') }}"></script> --}}
     <script src="{{ asset('js/bootstrap.min.js') }}"></script>
     @yield('style')
 </head>
@@ -35,8 +36,6 @@
                     <li><a href="{{ route('subject.index') }}">Asignaturas</a></li>
                     <li><a href="{{ route('teacher.index') }}">Docentes</a></li>
                     <li><a href="{{ route('student.index') }}">Estudiante</a></li>
-
-
 
                     <li class="nav-item dropdown">
                         <a id="navbarDropdown" class=" dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -92,6 +91,7 @@
     {{-- Script --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/SimpleLightbox/2.1.0/simpleLightbox.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 
 </html>

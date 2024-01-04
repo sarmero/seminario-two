@@ -22,9 +22,7 @@ class ProgramOfferController extends Controller
 
     public function index()
     {
-        $offer = Offer::select('offer.id', 'offer.code', 'program.name', 'modality.description as modality', 'offer.quotas')
-            ->join('program', 'offer.program_id', '=', 'program.id')
-            ->join('modality', 'offer.modality_id', '=', 'modality.id')
+        $offer = Offer::with('program', 'modality')
             ->where('offer.calendar_id', session('calendar'))
             ->get();
 
@@ -33,9 +31,8 @@ class ProgramOfferController extends Controller
 
     public function create()
     {
-        $program = Program::select('program.id', 'program.name')
-            ->orderBy('program.name', 'desc')
-            ->get();
+        $program = Program::orderBy('name', 'desc')
+            ->get(['id', 'name']);
 
         return view(
             'admin.offerProgram.CreateOfferProgram',
@@ -45,9 +42,8 @@ class ProgramOfferController extends Controller
 
     public function edit($id)
     {
-        $offer = Offer::select('offer.id', 'offer.code', 'program.name', 'offer.quotas')
-            ->join('program', 'offer.program_id', '=', 'program.id')
-            ->where('offer.id', $id)
+            $offer = Offer::with('program:id,name')
+            ->where('id', $id)
             ->get()
             ->first();
 

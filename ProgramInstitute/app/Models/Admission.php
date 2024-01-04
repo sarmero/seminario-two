@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Admission extends Model
@@ -29,9 +30,9 @@ class Admission extends Model
         return $this->belongsTo(Person::class);
     }
 
-    public function student(): HasOne
+    public function student(): HasMany
     {
-        return $this->hasOne(Student::class);
+        return $this->hasMany(Student::class);
     }
 
     public function offer(): BelongsTo

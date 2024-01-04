@@ -17,14 +17,14 @@
         </div>
     @else
         <div class="col-sm-12 d-flex justify-content-center my-3">
-            <h3>{{ $offer->name }}</h3>
+            <h3>{{ $offer->program->name }}</h3>
         </div>
     @endisset
 
     <div class="col-sm-6 my-3">
         <label for="modality" class="form-label">Modalidad:</label>
         <select class="form-select" name="modality" id="modality" required alt="gandalf">
-            <option value="">Choose...</option>
+            <option value="">Elejir...</option>
             @foreach ($modality as $item)
                 <option value="{{ $item->id }}">{{ $item->description }}
                 </option>

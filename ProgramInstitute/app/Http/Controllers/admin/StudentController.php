@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admission;
 use App\Models\Calendar;
 use App\Models\Contact;
 use App\Models\district;
 use App\Models\Offer;
 use App\Models\person;
+use App\Models\Program;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -25,71 +27,96 @@ class StudentController extends Controller
     {
         $district = district::get();
 
-        $student = Student::select('person.*','student.id as ids','contact.email','contact.phone')
-        ->join('admission', 'student.admission_id', '=', 'admission.id')
-        ->join('person', 'person.id', '=', 'admission.person_id')
-        ->join('contact', 'person.contact_id', '=', 'contact.id')
-        ->where('student.id', $id)
-        ->get()
-        ->first();
+        $student = Student::with([
+            'admission:id,person_id' => [
+                'person' => [
+                    'contact'
+                ]
+            ]
+        ])
+            ->where('id', $id)
+            ->get()
+            ->first();
 
-        return view('admin.student.EditStudent', ['student' => $student, 'district' => $district]);
+        // echo $student;
+
+        return view('admin.student.EditStudent', [
+            'student' => $student->id,
+            'person'=> $student->admission->person,
+            'contact'=>$student->admission->person->contact,
+            'district' => $district
+        ]);
     }
 
     public function getPrograms($id)
     {
-        $program = Offer::select('offer.id', 'program.name')
-            ->join('program', 'offer.program_id', '=', 'program.id')
-            ->where('offer.calendar_id', $id)
-            ->where('offer.state_offer_id', '2')
-            ->orderBy('program.name', 'desc')
-            ->get();
+        $program = Program::with('offer:id,program_id')
+            ->whereHas('offer', function ($query) use ($id) {
+                $query->where('calendar_id', $id)
+                    ->where('state_offer_id', '2');
+            })
+            ->orderBy('name', 'desc')
+            ->get(['id', 'name']);
 
         return response()->json(['program' => $program]);
     }
 
     public function show($id)
     {
-        $student = Offer::select('admission.id', 'student.code', 'student.id as ids', 'person.first_name', 'person.last_name')
-            ->join('admission', 'admission.offer_id', '=', 'offer.id')
-            ->join('student', 'student.admission_id', '=', 'admission.id')
-            ->join('person', 'admission.person_id', '=', 'person.id')
-            ->where('offer.id', $id)
-            ->orderBy('person.first_name', 'desc')
-            ->get();
+        $student = Admission::with([
+            'person:id,first_name,last_name',
+            'student:id,admission_id,code'
+        ])->where('offer_id', $id)
+            ->get(['id', 'person_id']);
 
-        return response()->json(['student' => $student]);
+        return response()->json([
+            'student' => $student,
+        ]);
     }
 
     public function showPerson($id)
     {
-        $person = Offer::select(
-            'person.*',
-            'role.description as role',
-            'program.name',
-            'offer.code',
-            'modality.description as modality',
-            'district.description as district',
-            'contact.*',
-            'semester.description as semester'
-        )
-            ->join('admission', 'admission.offer_id', '=', 'offer.id')
-            ->join('person', 'admission.person_id', '=', 'person.id')
-            ->join('student', 'student.admission_id', '=', 'admission.id')
-            ->join('semester', 'student.semester_id', '=', 'semester.id')
-            ->join('contact', 'person.contact_id', '=', 'contact.id')
-            ->join('role', 'person.role_id', '=', 'role.id')
-            ->join('district', 'person.district_id', '=', 'district.id')
-            ->join('modality', 'offer.modality_id', '=', 'modality.id')
-            ->join('program', 'offer.program_id', '=', 'program.id')
-            ->where('admission.id', $id)
-            ->get()
-            ->first();
+        $per = Offer::with([
+            'admission' => [
+                'person' => [
+                    'contact',
+                    'district',
+                    'role'
+                ],
+                'student' => [
+                    'semester'
+                ]
+            ],
+            'modality',
+            'program:id,name'
 
-        return view('admin.usersDetail.UserDetail', ['person' => $person]);
+        ])->whereHas(
+            'admission',
+            function ($query) use ($id) {
+                $query->where('id', $id);
+            }
+        )->get()->first();
+
+        foreach ($per->admission as  $adm) {
+            $person = $adm->person;
+            foreach ($adm->student as  $std) {
+                $student = $std;
+            }
+        }
+
+        return view('admin.usersDetail.UserDetail', [
+            'person' => $person,
+            'contact' => $person->contact,
+            'district' => $person->district,
+            'role' => $person->role,
+            'student' => $student,
+            'modality' => $per->modality,
+            'program' => $per->program
+        ]);
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
 
         $validador = Validator::make($request->all(), [
             'document' => 'required|integer|min:10',
@@ -133,5 +160,4 @@ class StudentController extends Controller
         Student::destroy($id);
         return  redirect()->route('student.index');
     }
-
 }

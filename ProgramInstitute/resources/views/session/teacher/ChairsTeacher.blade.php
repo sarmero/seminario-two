@@ -1,6 +1,7 @@
-@extends('layouts.app')
+@extends('session.BaseSession')
 
 @section('style')
+<link rel="stylesheet" href="{{ asset('session/css/body.css') }}">
     <link rel="stylesheet" href="{{ asset('session/css/offer.css') }}">
 @endsection
 
@@ -26,8 +27,8 @@
                         @foreach ($chairs as $i => $item)
                             <tr>
                                 <td class="text-center">{{ $i + 1 }}</td>
-                                <td>{{ $item->subject }}</td>
-                                <td class="text-center">{{ $item->semester }}</td>
+                                <td>{{ $item->subject->description }}</td>
+                                <td class="text-center">{{ $item->subject->semester_id }}</td>
                             </tr>
                         @endforeach
                     </tbody>

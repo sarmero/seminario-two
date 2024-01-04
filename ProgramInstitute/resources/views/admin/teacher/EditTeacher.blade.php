@@ -19,7 +19,7 @@
                 <div class="row">
                     <div class="col-lg-12 col-lg-offset-2">
 
-                        <form action="{{ route('activity.update',$teacher->idt) }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('teacher.update',$teacher->teacher->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
                             @include('admin.teacher.FormTeacher')

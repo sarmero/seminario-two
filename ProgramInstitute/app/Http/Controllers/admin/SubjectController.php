@@ -18,9 +18,8 @@ class SubjectController extends Controller
 
     public function __construct()
     {
-        $this->program = Program::select('program.id', 'program.name')
-            ->orderBy('name', 'desc')
-            ->get();
+        $this->program = Program::orderBy('name', 'desc')
+            ->get(['program.id', 'program.name']);
 
         $this->semester = Semester::get();
     }
@@ -38,24 +37,17 @@ class SubjectController extends Controller
     public function edit($id)
     {
         $subject = Subject::find($id);
-        return view('admin.subject.EditSubject', ['subject'=>$subject,'program' => $this->program, 'semester' => $this->semester]);
+        return view('admin.subject.EditSubject', ['subject' => $subject, 'program' => $this->program, 'semester' => $this->semester]);
     }
 
     public function show($id)
     {
-        $semester = Semester::get();
-
         $subject = Subject::where('program_id', $id)
             ->orderBy('semester_id', 'asc')
             ->orderBy('description', 'asc')
             ->get();
 
-        $nameProgram = Program::where('id', $id)
-            ->select('program.name')
-            ->get()
-            ->first();
-
-        return response()->json(['subject' => $subject, 'name' => $nameProgram, 'semester' => $semester]);
+        return response()->json(['subject' => $subject]);
     }
 
     public function store(Request $request)

@@ -57,18 +57,16 @@ class Offer extends Model
     {
         parent::boot();
 
-        // Evento se dispara al actualizar una oferta de programas
-        static::updated(function ($oferta) {
-            if ($oferta->state_offer_id == 2) {
-                $person = Admission::select('admission.id', 'admission.person_id', 'person.number_document as idp')
-                    ->join('person', 'admission.person_id', '=', 'person.id')
-                    ->where('admission.state_id', '1')
-                    ->get();
+        static::updated(function ($offer) {
+            if ($offer->state_offer_id == 2) {
+                $admi = Admission::with('person')
+                    ->where('state_id', '1')->where('offer_id', $offer->id)
+                    ->get(['id', 'person_id']);
 
 
-                foreach ($person as $i => $adm) {
+                foreach ($admi as $i => $adm) {
                     $code = static::uniqueCode();
-                    Student::create(
+                    $std =Student::create(
                         [
                             'code' => $code,
                             'admission_id' => $adm->id,
@@ -76,13 +74,24 @@ class Offer extends Model
                         ]
                     );
 
+                    Inscription::create([
+                        'student_id'=> $std->id,
+                        'offer_id'=>$offer->id,
+                    ]);
+
                     User::create(
                         [
                             'username' =>  $code,
                             'person_id' => $adm->person_id,
-                            'password' => bcrypt(substr($adm->idp, -4)),
+                            'password' => bcrypt(substr($adm->person->number_document, -4)),
                         ]
                     );
+
+                    $person = $adm->person;
+
+                    $person->update([
+                        'role_id' => 1,
+                    ]);
                 }
             }
         });

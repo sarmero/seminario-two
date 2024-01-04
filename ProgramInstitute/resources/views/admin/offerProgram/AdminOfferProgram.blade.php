@@ -43,8 +43,8 @@
                             <tr>
                                 <td class="text-center">{{ $i + 1 }}</td>
                                 <td>{{ $item->code }}</td>
-                                <td>{{ $item->name }}</td>
-                                <td class="text-center">{{ $item->modality }}</td>
+                                <td>{{ $item->program->name }}</td>
+                                <td class="text-center">{{ $item->modality->description }}</td>
                                 <td class="text-center">{{ $item->quotas }}</td>
 
                                 <td class="d-flex justify-content-center">

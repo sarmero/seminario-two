@@ -94,15 +94,15 @@
                 opt.classList.add('text-center');
 
                 ind.textContent = index + 1;
-                code.textContent = teacher.code;
+                code.textContent = teacher.teacher.code;
                 name.textContent = teacher.first_name;
                 last.textContent = teacher.last_name;
 
                 opt.innerHTML = `
                 <div class="icon">
-                    <a href="/admin/teacher/person/ ${teacher.idp}" title="visualizar" target="_blank"><i class="fas fa-eye"></i></a>
-                    <a href="teacher/${teacher.id}/edit" title="Editar"><i class="fas fa-edit mx-1"></i></a>
-                    <a href="#" onclick="deleteElement('${teacher.id}');" title="Eliminar"><i class="fas fa-trash-alt"></i></a>
+                    <a href="/admin/teacher/person/ ${teacher.id}" title="visualizar" target="_blank"><i class="fas fa-eye"></i></a>
+                    <a href="teacher/${teacher.teacher.id}/edit" title="Editar"><i class="fas fa-edit mx-1"></i></a>
+                    <a href="#" onclick="deleteElement('${teacher.teacher.id}');" title="Eliminar"><i class="fas fa-trash-alt"></i></a>
                     </div>
                             `;
 

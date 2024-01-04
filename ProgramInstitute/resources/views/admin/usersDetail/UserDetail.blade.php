@@ -21,7 +21,7 @@
                     <div class="col-3">
                         <div class="image">
                             @if ($person->photo != '')
-                                <img src="{{ asset('storage/profile/'.$person->photo) }}" alt="user" width="200"
+                                <img src="{{ asset('storage/profile/' . $person->photo) }}" alt="user" width="200"
                                     height="230" class="d-inline-block align-text-center">
                             @else
                                 <img src="{{ asset('image/profile/profilex.jpg') }}" alt="user" width="150"
@@ -68,22 +68,22 @@
                         <div class="person">
                             <div class="inf">
                                 <div class="item">Rol</div>
-                                <div class="descip">{{ $person->role }}</div>
+                                <div class="descip">{{ $role->description }}</div>
                             </div>
 
                             <div class="inf">
                                 <div class="item">Email</div>
-                                <div class="descip">{{ $person->email }}</div>
+                                <div class="descip">{{ $contact->email }}</div>
                             </div>
 
                             <div class="inf">
                                 <div class="item">Telefono</div>
-                                <div class="descip">{{ $person->phone }}</div>
+                                <div class="descip">{{ $contact->phone }}</div>
                             </div>
 
                             <div class="inf">
                                 <div class="item">Barrio</div>
-                                <div class="descip">{{ $person->district }}</div>
+                                <div class="descip">{{ $district->description }}</div>
                             </div>
                         </div>
                     </div>
@@ -92,30 +92,30 @@
                         <div class="person">
                             <div class="inf">
                                 <div class="item">Programa</div>
-                                <div class="descip">{{ $person->name }}</div>
+                                <div class="descip">{{ $program->name}}</div>
                             </div>
 
-                            @if ($person->role_id == 1 || $person->role_id == 4)
-                                <div class="inf">
-                                    <div class="item">Codigo</div>
-                                    <div class="descip">{{ $person->code }}</div>
-                                </div>
+                            @if ($role->id == 1 || $role->id == 4)
+                                @isset($student)
+                                    <div class="inf">
+                                        <div class="item">Codigo</div>
+                                        <div class="descip">{{ $student->code }}</div>
+                                    </div>
 
-                                @isset($person->semester)
                                     <div class="inf">
                                         <div class="item">Semestre</div>
-                                        <div class="descip">{{ $person->semester }}</div>
+                                        <div class="descip">{{ $student->semester->description }}</div>
                                     </div>
                                 @else
                                     <div class="inf">
                                         <div class="item">Estado</div>
-                                        <div class="descip">{{ $person->state }}</div>
+                                        <div class="descip">{{ $state->state }}</div>
                                     </div>
                                 @endisset
 
                                 <div class="inf">
                                     <div class="item">Modalidad</div>
-                                    <div class="descip">{{ $person->modality }}</div>
+                                    <div class="descip">{{ $modality->description }}</div>
                                 </div>
                             @endif
 

@@ -8,14 +8,14 @@ $(document).ready(function () {
 
         if (program !== '') {
             $.ajax({
-                url: '/offer-subject/'+program,
+                url: '/offer-subject/' + program,
                 type: 'GET',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 dataType: 'json',
                 success: function (response) {
-
+                    // console.log(response);
                     if (response.offer.length > 0) {
                         $('#tableBody').html('<tbody id="tableBody"></tbody>');
                         obtain_data_table(response.offer);
@@ -53,10 +53,21 @@ function obtain_data_table(response) {
         const opt = document.createElement('td');
         opt.classList.add('text-center');
 
+        if (offer.programming.length > 0) {
+            $.each(offer.programming, function (index, pro) {
+                person = pro.teacher.person;
+                teacher.textContent = person.first_name + ' ' + person.last_name
+            });
+        } else {
+            teacher.textContent = 'indefinido';
+        }
+
+
+
         ind.textContent = index + 1;
-        subject.textContent = offer.subject;
-        semester.textContent = offer.semester;
-        teacher.textContent = offer.first_name + ' ' + offer.last_name
+        subject.textContent = offer.subject.description;
+        semester.textContent = offer.subject.semester_id;
+
         quotas.textContent = offer.quotas;
         opt.innerHTML = `
         <a href="offer-subject/${offer.id}/edit" title="Editar"><i class="fas fa-edit mx-1"></i></a>

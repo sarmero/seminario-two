@@ -26,8 +26,8 @@
                 @csrf
                 <div class="semester">
                     <label for="program" class="form-label">Programa:</label>
-                    <select class="form-select" name="program" id="program" required>
-                        <option value="">Choose...</option>
+                    <select class="form-select" name="program" id="program">
+                        <option value="">Elejir...</option>
                         @foreach ($program as $item)
                             <option value="{{ $item->id }}">{{ $item->name }}
                             </option>

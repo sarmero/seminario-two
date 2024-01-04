@@ -1,8 +1,7 @@
-@extends('layouts.app')
+@extends('session.BaseSession')
 
 @section('style')
     <link rel="stylesheet" href="{{ asset('session/css/offer.css') }}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @endsection
 
 @section('title')
@@ -29,7 +28,7 @@
             @foreach ($offer as $of)
                 <div class="item">
                     <div class="cont">
-                        <div class="subject">{{ $of->description }}</div>
+                        <div class="subject">{{ $of->subject->description }}</div>
                         <div class="desc">
                             <div class="state">
                                 Ofertada

@@ -12,14 +12,14 @@
     <div class="container">
         <div class="cont-p">
             <div class="title">
-                <div class="tit">Atualizar Docentes</div>
+                <div class="tit">Atualizar Estudiante</div>
             </div>
 
             <div class="form">
                 <div class="row">
                     <div class="col-lg-12 col-lg-offset-2">
 
-                        <form action="{{ route('student.update',$student->id) }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('student.update',$student) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
                             @include('admin.student.FormStudent')

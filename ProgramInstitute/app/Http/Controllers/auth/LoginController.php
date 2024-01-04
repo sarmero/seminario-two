@@ -53,8 +53,6 @@ class LoginController extends Controller
 
         $request->session()->regenerate();
 
-
-
         if ($person->role_id == 1) {
             $this->dataStudent($user->person_id);
             return redirect()->route('session.home');
@@ -70,56 +68,47 @@ class LoginController extends Controller
         }
     }
 
-
     private function dataStudent($id)
     {
-        $student = Student::join('inscription', 'inscription.student_id', '=', 'student.id')
-            ->join('offer', 'offer.id', '=', 'inscription.offer_id')
-            ->join('program', 'program.id', '=', 'offer.program_id')
-            ->join('admission', 'student.admission_id', '=', 'admission.id')
-            ->join('semester', 'semester.id', '=', 'student.semester_id')
-            ->select(
-                'program.name as program',
-                'inscription.id as inc',
-                'inscription.offer_id as offer',
-                'program.id as pro',
-                'student.code',
-                'semester.id as semester',
-                'student.id as std'
-            )
-            ->where('admission.person_id', $id)
+        $student = Student::with([
+            'inscription' => [
+                'offer:id,program_id' => [
+                    'program:id,name'
+                ]
+            ]
+        ])->whereHas('admission', function ($query) use ($id) {
+            $query->where('person_id', $id);
+        })
             ->get()
             ->first();
 
-        $approved = InscriptionSubject::where('inscription_id', $student->inc)
+        $inc = $student->inscription[0];
+
+        $approved = InscriptionSubject::where('inscription_id', $inc->id)
             ->where('note', '>=', 3)
             ->get();
 
-        $subject = Subject::where('program_id', $student->pro)->count();
+        $subject = Subject::where('program_id', $inc->offer->program_id)->count();
 
-        $average = InscriptionSubject::where('inscription_id', $student->inc)->avg('note');
+        $average = InscriptionSubject::where('inscription_id', $inc->id)->avg('note');
 
-        $position = InscriptionSubject::join('inscription', 'inscription.id', '=', 'inscription_subject.inscription_id')
-            ->select(DB::raw('COUNT(*) as puesto'))
-            ->where('note', '>', $average)
-            ->where('inscription.offer_id', $student->offer)
-            ->where('inscription_subject.inscription_id', '=!', $student->inc)
-            ->count();
+        $position = InscriptionSubject::whereHas('inscription', function ($query) use ($average, $inc) {
+            $query->where('note', '>', $average)->where('offer_id', $inc->offer_id)->where('id', '=!', $inc->id);
+        })->count();
 
-        $activity = Activity::join('offer_subject', 'offer_subject.id', '=', 'activity.offer_subject_id')
-            ->join('inscription_subject', 'offer_subject.id', '=', 'inscription_subject.offer_subject_id')
-            ->where('inscription_subject.inscription_id', $student->inc)
-            ->select('activity.description', 'activity.deadline')
-            ->orderBy("activity.deadline", "asc")
-            ->get();
+        $activity = Activity::whereHas('offerSubject.inscriptionSubject', function ($query) use ($inc) {
+            $query->where('inscription_id', $inc->id);
+        })
+            ->orderBy("deadline", "asc")
+            ->get(['id', 'description', 'deadline']);
 
         $news = News::orderBy("date", "asc")->get();
 
-        session(['program' => $student->program]);
-        session(['inscription' => $student->inc]);
-        session(['program_id' => $student->pro]);
+        session(['program' => $inc->offer->program->name]);
+        session(['inscription' => $inc->id]);
+        session(['program_id' => $inc->offer->program_id]);
         session(['code' => $student->code]);
-        session(['semester' => $student->semester]);
+        session(['semester' => $student->semester_id]);
         session(['subjects' => count($approved)]);
         session(['subject_tt' => $subject]);
         session(['average' => round($average, 2)]);
@@ -130,21 +119,20 @@ class LoginController extends Controller
 
     private function dataTeacher($id)
     {
-        echo 'id: '.$id;
-        echo 'id: '.$id;
-        echo 'id: '.$id;
+        echo 'id: ' . $id;
+        echo 'id: ' . $id;
+        echo 'id: ' . $id;
         $teacher = Teacher::where('person_id', $id)->get()->first();
         session(['teacher' => $teacher->id]);
 
         $news = News::orderBy("date", "asc")->get();
         session(['news' => $news]);
 
-        $activity = Activity::join('offer_subject', 'offer_subject.id', '=', 'activity.offer_subject_id')
-            ->join('programming', 'programming.offer_subject_id', '=', 'offer_subject.id')
-            ->where('programming.teacher_id', $teacher->id)
-            ->select('activity.description', 'activity.deadline')
-            ->orderBy("activity.deadline", "asc")
-            ->get();
+        $activity = Activity::whereHas('offerSubject.programming', function ($query) use ($teacher) {
+            $query->where('teacher_id', $teacher->id);
+        })
+            ->orderBy("deadline", "asc")
+            ->get(['id', 'description', 'deadline']);
 
         session(['activity' => $activity]);
     }
@@ -165,3 +153,11 @@ class LoginController extends Controller
         return redirect()->route('home');
     }
 }
+
+
+// $position = InscriptionSubject::join('inscription', 'inscription.id', '=', 'inscription_subject.inscription_id')
+// ->select(DB::raw('COUNT(*) as puesto'))
+// ->where('note', '>', $average)
+// ->where('inscription.offer_id', $student->offer)
+// ->where('inscription_subject.inscription_id', '=!', $inc->id)
+// ->count();

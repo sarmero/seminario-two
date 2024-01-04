@@ -1,29 +1,16 @@
 <?php
 
 namespace App\Http\Controllers\admin;
-
 use App\Http\Controllers\Controller;
-use App\Models\Modality;
-use App\Models\Offer;
 use App\Models\Program;
-use App\Models\Subject;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator as FacadesValidator;
-use Illuminate\Validation\Rule;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class ProgramController extends Controller
 {
     public function index()
     {
-        $program = Program::select('program.id', 'program.name', 'program.description', DB::raw('COUNT(subject.id) as subject'))
-            ->leftJoin('subject', 'program.id', '=', 'subject.program_id')
-            ->groupBy('program.id', 'program.name', 'program.description')
-            ->get();
-
+        $program = Program::withCount('subject')->get(['id', 'name']);
         return view('admin.program.AdminProgram', ['program' => $program]);
     }
 
@@ -39,7 +26,7 @@ class ProgramController extends Controller
 
     public function store(Request $request)
     {
-        $validador = FacadesValidator::make($request->all(), [
+        $validador = Validator::make($request->all(), [
             'program' => 'required|unique:program,name|regex:/^([A-Za-zÑñ\s]*)$/|between:5,200',
             'description' => 'required|regex:/^(\s*\S.*\s*)*$/|min:10',
             'image' => 'required|image|mimes:jpg,png,jpeg|max:2040',
@@ -64,7 +51,7 @@ class ProgramController extends Controller
 
     public function update(Request $request, Program $program)
     {
-        $validador = FacadesValidator::make($request->all(), [
+        $validador = Validator::make($request->all(), [
             'program' => 'required|regex:/^([A-Za-zÑñ\s]*)$/|between:5,200',
             'description' => 'required|regex:/^(\s*\S.*\s*)*$/|min:10',
             'image' => 'required|image|mimes:jpg,png,jpeg|max:2040',
@@ -91,24 +78,4 @@ class ProgramController extends Controller
         $program->delete();
         return redirect()->route('program.index');
     }
-
-
 }
-
-// if ($program->image != null) {
-//     Storage::delete($program->image);
-// }
-
-// public function delete(Request $request, $id)
-    // {
-
-    //     $program = Program::find($id);
-
-    //     if ($program->image != null) {
-    //         Storage::delete($program->image);
-    //     }
-
-    //     Program::destroy($id);
-
-    //     return response()->json(['mensaje' => 'Elemento eliminado correctamente ']);
-    // }

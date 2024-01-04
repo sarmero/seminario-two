@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\session;
 
 use App\Http\Controllers\Controller;
-use App\Models\Subject;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
+use App\Models\OfferSubject;
 
 class ChairsTeacherController extends Controller
 {
@@ -13,13 +11,18 @@ class ChairsTeacherController extends Controller
     {
         session(['page' => 'Catedras']);
 
-        $chairs = Subject::select('subject.description as subject', 'subject.semester_id as semester')
-            ->join('offer_subject', 'offer_subject.subject_id', '=', 'subject.id')
-            ->join('programming', 'programming.offer_subject_id', '=', 'offer_subject.id')
-            ->where('programming.teacher_id', session('teacher'))
-            ->where('offer_subject.calendar_id', session('calendar'))
-            ->get();
+        $tea = session('teacher');
+        $cal = session('calendar');
 
-        return view('session.chairsTeacher', ['chairs' => $chairs]);
+        $chairs = OfferSubject::with('subject:id,description,semester_id')
+            ->whereHas('programming', function ($query) use ($tea) {
+                $query->where('teacher_id', $tea);
+            })->where('calendar_id', $cal)
+            ->get(['id', 'subject_id']);
+
+            // echo $chairs;
+
+        return view('session.teacher.chairsTeacher', ['chairs' => $chairs]);
+
     }
 }

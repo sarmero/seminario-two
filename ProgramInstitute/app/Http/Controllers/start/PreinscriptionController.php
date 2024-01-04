@@ -4,12 +4,14 @@ namespace App\Http\Controllers\start;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admission;
+use App\Models\Calendar;
 use App\Models\Contact;
 use Illuminate\Http\Request;
 use App\Models\Person;
 use App\Models\District;
 use App\Models\Offer;
 use App\Models\Program;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -20,11 +22,13 @@ class PreinscriptionController extends Controller
     public function index()
     {
         $district = district::get();
+        $cal = Calendar::latest('id')->first();
 
-        $program = Offer::join("program", "program.id", "=", "offer.program_id")
-            ->select('program.name', 'offer.id')
-            ->orderBy("program.name", "asc")
-            ->get();
+        $program = Offer::with('program:id,name')
+        ->where('calendar_id', $cal->id)->where('state_offer_id', '1')
+        ->get(['offer.program_id','offer.id']);
+
+        // echo $program;
 
         return view('start.Preinscription', ['district' => $district], ['program' => $program]);
     }

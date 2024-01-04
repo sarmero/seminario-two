@@ -5,7 +5,7 @@
             <option value="">Elegir...</option>
             @foreach ($program as $pro)
                 <option
-                    value="{{ $pro->id }}" @if (old('program') == '' && isset($teacher)) {{ $teacher->program_id == $pro->id ? 'selected' : '' }}
+                    value="{{ $pro->id }}" @if (old('program') == '' && isset($teacher)) {{ $teacher->teacher->program_id == $pro->id ? 'selected' : '' }}
                 @else
                     {{ old('program') == $pro->id ? 'selected' : '' }} @endif>{{ $pro->name }}
                 </option>
@@ -36,7 +36,7 @@
     <div class="col-sm-4">
         <label for="mail" class="form-label">Email:</label>
         <input type="mail" class="form-control" name="mail" id="mail" placeholder=""
-            value="@isset($teacher){{ old('mail', $teacher->email) }}@else{{ old('mail') }}@endisset">
+            value="@isset($teacher){{ old('mail', $teacher->contact->email) }}@else{{ old('mail') }}@endisset">
 
         @error('mail')
             <div class="alert alert-danger">{{ $message }}</div>
@@ -61,7 +61,7 @@
     <div class="col-sm-4">
         <label for="phone" class="form-label">Celular:</label>
         <input type="text" class="form-control" name="phone" id="phone" placeholder=""
-            value="@isset($teacher){{ old('phone', $teacher->phone) }}@else{{ old('phone') }}@endisset">
+            value="@isset($teacher){{ old('phone', $teacher->contact->phone) }}@else{{ old('phone') }}@endisset">
 
         @error('phone')
             <div class="alert alert-danger">{{ $message }}</div>
@@ -70,7 +70,7 @@
 
     <div class="col-sm-3">
         <label for="district" class="form-label">Barrio:</label>
-        <select class="form-select" name="district" id="district" required alt="gandalf">
+        <select class="form-select" name="district" id="district" alt="gandalf">
             <option value="">Elegir...</option>
             @foreach ($district as $dis)
                 <option value="{{ $dis->id }}" @if (old('district') == '' && isset($teacher)) {{ $teacher->district_id == $dis->id ? 'selected' : '' }}

@@ -38,7 +38,7 @@
                             <tr>
                                 <td class="text-center">{{ $i + 1 }}</td>
                                 <td>{{ $item->name }}</td>
-                                <td class="text-center">{{ $item->subject }}</td>
+                                <td class="text-center">{{ $item->subject_count }}</td>
 
                                 <td class="d-flex justify-content-center">
                                     <a href="{{ route('content', $item->id) }}" title="contenido" target="_blank"><i

@@ -2,11 +2,11 @@ $(document).ready(function () {
     $('#calendar').change(function () {
         var calendar = $(this).val();
 
-        $('#program').html('<option value="">Choose...</option>');
+        $('#program').html('<option value="">Elije...</option>');
 
         if (calendar !== '') {
             $.ajax({
-                url: '/student/program/'+calendar,
+                url: '/student/program/' + calendar,
                 type: 'GET',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -36,13 +36,14 @@ $(document).ready(function () {
 
         if (program !== '') {
             $.ajax({
-                url: '/student/'+program,
+                url: '/student/' + program,
                 type: 'GET',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 dataType: 'json',
                 success: function (response) {
+                    console.log(response);
                     if (response.student.length > 0) {
                         $('#tableBody').html('<tbody id="tableBody"></tbody>');
                         ontain_data_table(response.student);
@@ -59,7 +60,6 @@ $(document).ready(function () {
         const tableBody = document.querySelector('#tableBody');
 
         $.each(response, function (index, student) {
-
             const rowData = document.createElement('tr');
 
             const ind = document.createElement('td');
@@ -73,16 +73,18 @@ $(document).ready(function () {
             const opt = document.createElement('td');
             opt.classList.add('text-center');
 
-
+            student.student.forEach(ele => {
+                std = ele;
+            });
 
             ind.textContent = index + 1;
             cod.textContent = student.code;
-            name.textContent = student.first_name;
-            last.textContent = student.last_name;
+            name.textContent = student.person.first_name;
+            last.textContent = student.person.last_name;
             opt.innerHTML = `
-                <a href="/admin/student/person/ ${student.id}" title="descripcion" target="_blank"><i class="fas fa-eye"></i></a>
-                <a href="/student/${student.ids}/edit" title="Editar"><i class="fas fa-edit mx-1"></i></a>
-                <a href="#" onclick="deleteElement('${student.ids}');" title="Eliminar"><i class="fas fa-trash-alt"></i></a>
+                <a href="/admin/student/person/ ${student.person.id}" title="descripcion" target="_blank"><i class="fas fa-eye"></i></a>
+                <a href="/student/${std.id}/edit" title="Editar"><i class="fas fa-edit mx-1"></i></a>
+                <a href="#" onclick="deleteElement('${std.id}');" title="Eliminar"><i class="fas fa-trash-alt"></i></a>
             `;
 
             rowData.appendChild(ind);

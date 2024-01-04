@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\session;
 
 use App\Http\Controllers\Controller;
+use App\Models\InscriptionSubject;
 use App\Models\Semester;
+use App\Models\Student;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -14,37 +16,22 @@ class RatingsController extends Controller
     {
         session(['page' => 'Calificaciones']);
         $semester = Semester::get();
-        session(['inscription' => 1]);
-        return view('session.ratings', ['semester' => $semester]);
+        return view('session.student.RatingsStudent', ['semester' => $semester]);
     }
 
-    public function ratings(Request $request)
+    public function ratings($id)
     {
-        $semst = $request->input('smt');
-        $inscription = session('inscription');
-
-        $subject = Subject::select('subject.description', 'person.first_name', 'person.last_name', 'inscription_subject.note')
-            ->join('offer_subject', 'subject.id', '=', 'offer_subject.subject_id')
-            ->join('inscription_subject', function ($join) use ($inscription) {
-                $join->on('offer_subject.id', '=', 'inscription_subject.offer_subject_id')
-                    ->where('inscription_subject.inscription_id', '=', $inscription);
-            })
-            ->join('programming', 'offer_subject.id', '=', 'programming.offer_subject_id')
-            ->join('teacher', 'programming.teacher_id', '=', 'teacher.id')
-            ->join('person', 'teacher.person_id', '=', 'person.id')
-            ->where('subject.semester_id', '=', $semst)
-            ->get();
-
-
-        $semester = Semester::get();
-
-        return view(
-            'session.ratings',
-            [
-                'subject' => $subject,
-                'semester' => $semester,
-                'semt' => $semst
+        $subject = InscriptionSubject::with([
+            'offerSubject:id,subject_id'=>[
+                'subject:id,description,semester_id',
+                'programming.teacher.person:id,first_name,last_name'
             ]
-        );
+        ])->whereHas('offerSubject.subject', function ($query) use ($id){
+            $query->where('semester_id', '=', $id);
+        })->whereHas('inscription.student', function ($query){
+            $query->where('code', '=', session('code'));
+        })->get();
+
+        return  response()->json(['subject' => $subject,]);
     }
 }

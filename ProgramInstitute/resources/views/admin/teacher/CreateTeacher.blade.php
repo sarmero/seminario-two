@@ -19,7 +19,7 @@
                 <div class="row">
                     <div class="col-lg-12 col-lg-offset-2">
 
-                        <form action="{{ route('activity.store') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('teacher.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @include('admin.teacher.FormTeacher')
                             <button class="w-50 btn btn-primary btn-sm offset-md-3" type="submit">Enviar</button>

@@ -14,7 +14,7 @@
                 <option value="">Elegir...</option>
                 @foreach ($subject as $item)
                     <option value="{{ $item->id }}" {{ old('subject') == $item->id ? 'selected' : '' }}>
-                        {{ $item->subject }}
+                        {{ $item->description}}
                     </option>
                 @endforeach
             </select>

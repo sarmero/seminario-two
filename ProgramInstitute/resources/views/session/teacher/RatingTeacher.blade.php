@@ -1,8 +1,7 @@
-@extends('layouts.app')
+@extends('session.BaseSession')
 
 @section('style')
     <link rel="stylesheet" href="{{ asset('session/css/offer.css') }}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @endsection
 
 @section('title')
@@ -20,7 +19,7 @@
                     <select class="form-select" name="subject" id="subject" required alt="gandalf">
                         <option value="">Choose...</option>
                         @foreach ($subject as $item)
-                            <option value="{{ $item->id }}">{{ $item->subject }}
+                            <option value="{{ $item->id }}">{{ $item->subject->description }}
                             </option>
                         @endforeach
                     </select>
@@ -46,22 +45,23 @@
 
                             <tbody>
                                 @foreach ($student as $i => $item)
+
                                     <tr>
                                         <td class="text-center">{{ $i + 1 }}</td>
-                                        <td>{{ $item->code }}</td>
-                                        <td>{{ $item->first_name }}</td>
-                                        <td>{{ $item->last_name }}</td>
+                                        <td>{{ $item->inscription->student->code }}</td>
+                                        <td>{{ $item->inscription->student->admission->person->first_name }}</td>
+                                        <td>{{ $item->inscription->student->admission->person->last_name }}</td>
                                         <td>{{ $item->note }}</td>
 
                                         <td class="text-center">
 
-                                            <a href="{{ route('admin.student.person', $item->person) }}" title="visualizar"
+                                            <a href="{{ route('student.person', $item->inscription->student->admission->person->id) }}" title="visualizar"
                                                 target="_blank">
                                                 <i class="fas fa-eye"></i>
                                             </a>
 
                                             <a href="#"
-                                                onclick="atualizarElementosForm('{{ $item->inscription }}', '{{ $item->first_name . ' ' . $item->last_name }}','{{ $item->note }}');"title="Editar">
+                                                onclick="atualizarElementosForm('{{ $item->id }}', '{{ $item->inscription->student->admission->person->first_name . ' ' . $item->inscription->student->admission->person->last_name }}','{{ $item->note }}');"title="Editar">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                         </td>
@@ -158,10 +158,8 @@
 
                                 <div class="col-sm-12">
                                     <label for="note" class="form-label">Nota:</label>
-                                    <input type="text" class="form-control" name="note" id="note" required>
-                                    <div class="invalid-feedback">
-                                        Valid last note is required.
-                                    </div>
+                                    <input type="text" class="form-control" name="note" id="note" >
+
                                 </div>
 
                             </div>
@@ -202,11 +200,8 @@
             form.setAttribute('action', '/users/teacher/ratings/update/' + id);
 
             $('#actualizarModal').modal('show');
-
         }
 
-
-        
     </script>
 
 @endsection

@@ -32,7 +32,7 @@
             @enderror
         @else
             <div class="d-flex justify-content-center my-3">
-                <h3>{{ $offer->subject }}</h3>
+                <h3>{{ $offer->subject->description }}</h3>
             </div>
         @endisset
     </div>
@@ -43,7 +43,7 @@
             <option value="">Elejir...</option>
             @isset($teacher)
                 @foreach ($teacher as $tea)
-                    <option value="{{ $tea->id }}" {{ $offer->teacher_id == $tea->id ? 'selected' : '' }}>
+                    <option value="{{ $tea->teacher->id }}" {{ $offer->programming[0]['teacher_id'] == $tea->teacher->id ? 'selected' : '' }}>
                         {{ $tea->first_name }} {{ $tea->last_name }}
                     </option>
                 @endforeach

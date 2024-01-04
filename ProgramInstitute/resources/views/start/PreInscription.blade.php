@@ -36,7 +36,7 @@
                                                 @foreach ($program as $pro)
                                                     <option value="{{ $pro->id }}"
                                                         {{ old('program') == $pro->id ? 'selected' : '' }}>
-                                                        {{ $pro->name }}>{{ $pro->name }}
+                                                        {{ $pro->program->name }}
                                                     </option>
                                                 @endforeach
                                             </select>

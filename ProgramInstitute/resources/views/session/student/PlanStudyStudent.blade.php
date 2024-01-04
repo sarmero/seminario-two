@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('session.BaseSession')
 
 @section('style')
     <link rel="stylesheet" href="{{ asset('session/css/plan.css') }}">

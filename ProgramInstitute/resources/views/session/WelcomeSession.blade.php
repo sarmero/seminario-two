@@ -201,7 +201,7 @@
                                     @foreach (session('activity') as $act)
                                         <div class="item">
                                             <div class="theme">{{ $act->description }}</div>
-                                            <div class="desc">{{ $act->deadline }}</div>
+                                            <div class="desc">{{ substr($act->deadline,0,10) }}</div>
                                         </div>
                                     @endforeach
                                 </div>

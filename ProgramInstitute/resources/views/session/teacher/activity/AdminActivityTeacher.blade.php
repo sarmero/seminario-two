@@ -24,7 +24,7 @@
                 <select class="form-select" name="subject" id="subject" required alt="gandalf">
                     <option value="">Elejir...</option>
                     @foreach ($subject as $item)
-                        <option value="{{ $item->id }}">{{ $item->subject }}
+                        <option value="{{ $item->id }}">{{ $item->subject->description }}
                         </option>
                     @endforeach
                 </select>
@@ -101,7 +101,7 @@
 
             function ontain_data_table(response) {
                 const tableBody = document.querySelector('#tableBody');
-
+                
                 $.each(response, function(index, activity) {
 
                     const rowData = document.createElement('tr');

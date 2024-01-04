@@ -9,7 +9,7 @@
 @endsection
 
 @section('content')
-    <div class="create mb-3 d-flex justify-content-end">
+    <div class="create my-3 mx-3 mb-3 d-flex justify-content-start">
         <a href="{{ route('program.create') }}" class="btn btn-primary btn-sm" role="button">
             Atras
         </a>

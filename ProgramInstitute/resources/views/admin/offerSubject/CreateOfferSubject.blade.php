@@ -51,7 +51,7 @@
                             $('#teacher').html('<option value="">Elejir...</option>');
                             if (response.teacher.length > 0) {
                                 response.teacher.forEach(teacher => {
-                                    $('#teacher').append('<option value="'+teacher.id+'">'+teacher.first_name+' '+teacher.last_name+'</option>');
+                                    $('#teacher').append('<option value="'+teacher.teacher.id+'">'+teacher.first_name+' '+teacher.last_name+'</option>');
                                 });
                             }
                         },

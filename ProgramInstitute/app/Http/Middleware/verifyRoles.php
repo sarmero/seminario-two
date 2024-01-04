@@ -17,6 +17,7 @@ class verifyRoles
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         if (Auth::check()) {
+
             if (Auth::User()->hasAnyRole($roles)) {
                 return $next($request);
             } else {
@@ -27,3 +28,4 @@ class verifyRoles
         return redirect()->route('login');
     }
 }
+

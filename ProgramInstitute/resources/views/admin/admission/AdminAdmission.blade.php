@@ -9,8 +9,6 @@
 @endsection
 
 @section('content')
-    @isset($name)
-    @endisset
 
     <div class="container">
         <div class="cont-p">
@@ -30,8 +28,11 @@
             </div>
 
 
-            <div class="program-name my-4 text-center">
+            <div class="program-name my-4 text-center"> </div>
 
+            <div id="loading-message">
+                <div id="spinner"></div>
+                <p>Cargando...</p>
             </div>
 
             <div class="accordion accordion-flush" id="accordionExample">
@@ -134,6 +135,7 @@
     <script>
         function closeOffer(id) {
             if (confirm('¿Estás seguro de que deseas cerrar esta oferta?')) {
+                mostrarCarga();
                 $.ajax({
                     type: 'GET',
                     url: '/admin/admission/close/' + id,
@@ -141,17 +143,21 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(response) {
-                        console.log(response);
-                        window.location.href = '/admissions';
+                        // console.log(response);
+                        ocultarCarga();
+                        window.location.href = '/admin/welcome';
+
                     },
                     error: function(error) {
+                        ocultarCarga();
                         console.error('Error en la solicitud Ajax:', error);
                     }
                 });
             }
+
         }
 
-        function updateState(state, id, pro) {
+        function updateState(state, id) {
 
             $.ajax({
                 url: '/admissions/' + id,
@@ -164,7 +170,7 @@
                 },
                 dataType: 'json',
                 success: function(response) {
-                    console.log(response.message);
+                    // console.log(response.message);
                     window.location.href = '/admissions';
                 },
                 error: function(xhr, status, error) {
@@ -191,8 +197,11 @@
                 icon2 = 'fa-minus-circle';
             }
 
-            $.each(response, function(index, state) {
+            // console.log(response.admission);5
 
+            $.each(response.admission, function(index, state) {
+
+                // console.log(state.person.first_name);
                 const rowData = document.createElement('tr');
 
                 const ind = document.createElement('td');
@@ -206,14 +215,14 @@
                 opt.classList.add('text-center');
 
                 ind.textContent = index + 1;
-                name.textContent = state.first_name;
-                last.textContent = state.last_name;
+                name.textContent = state.person.first_name;
+                last.textContent = state.person.last_name;
 
                 opt.innerHTML = `
                 <div class="icon">
                     <a href="/admin/admission/person/${state.id}" target="_blank" title="descripcion"><i class="fas fa-eye"></i></a>
-                    <a href="#" onclick="updateState('${state1}', '${state.id}', '${state.pro}');" title="Aprobar"><i class="fas ${icon1}"></i></a>
-                    <a href="#"onclick="updateState('${state2}','${state.id}','${state.pro}');"title="Pendiente"><i class="fas ${icon2}"></i></a>
+                    <a href="#" onclick="updateState('${state1}', '${state.id}');" title="Aprobar"><i class="fas ${icon1}"></i></a>
+                    <a href="#"onclick="updateState('${state2}','${state.id}');"title="Pendiente"><i class="fas ${icon2}"></i></a>
                     </div>
                             `;
 
@@ -226,11 +235,14 @@
             });
         }
 
+
+
         $(document).ready(function() {
             $('#program').change(function() {
                 var program = $(this).val();
 
                 if (program !== '') {
+                     mostrarCarga();
                     $.ajax({
                         url: '/admissions/' + program,
                         type: 'GET',
@@ -239,70 +251,84 @@
                         },
                         dataType: 'json',
                         success: function(response) {
-
+                            // console.log(response)
+                            ocultarCarga();
 
                             $('.program-name').html('');
                             title = document.querySelector('.program-name');
                             cont = document.createElement('h3');
                             cont.innerHTML =
-                                `${response.name.name}<br><span>Cupos: ${response.name.quotas}  | Solicitudes: ${response.requests} </span>`;
+                                `${response.name.program.name}<br><span>Cupos: ${response.name.quotas}  | Solicitudes: ${response.requests} </span>`;
                             title.appendChild(cont);
 
                             $('.button-close').html('');
                             btn = document.querySelector('.button-close');
                             cont = document.createElement('div');
                             cont.innerHTML =
-                                `<a href="#" onclick="closeOffer('${response.name.offer}');" class="btn btn-primary" role="button">Cerrar oferta</a>`;
+                                `<a href="#" onclick="closeOffer('${response.name.id}');" class="btn btn-primary" role="button">Cerrar oferta</a>`;
                             btn.appendChild(cont);
 
+                            $('#tableBodyApproved').html('');
+                            $('#tableBodyEarrings').html('');
+                            $('#tableBodyRejected').html('');
 
-
-                            if (response.approved.length > 0) {
-                                $('#tableBodyApproved').html('');
+                            if (response.approved != null) {
                                 tableBody = document.querySelector('#tableBodyApproved');
                                 obtain_data_table(response.approved, tableBody, 2, 3);
 
                                 $('#one').html('');
                                 head = document.querySelector('#one')
                                 const div = document.createElement('div');
-                                div.textContent = 'Aprobado(' + response.approved.length +
+                                div.textContent = 'Aprobado(' + response.approved.admission
+                                    .length +
                                     ')';
                                 head.appendChild(div);
                             }
 
-                            if (response.earrings.length > 0) {
-                                $('#tableBodyEarrings').html('');
+                            if (response.earrings != null) {
                                 tableBody = document.querySelector('#tableBodyEarrings');
                                 obtain_data_table(response.earrings, tableBody, 1, 3);
 
                                 $('#two').html('');
                                 head = document.querySelector('#two')
                                 const div = document.createElement('div');
-                                div.textContent = 'Pendientes(' + response.earrings.length +
+                                div.textContent = 'Pendientes(' + response.earrings.admission
+                                    .length +
                                     ')';
                                 head.appendChild(div);
                             }
 
-                            if (response.rejected.length > 0) {
-                                $('#tableBodyRejected').html('');
+                            if (response.rejected != null) {
                                 tableBody = document.querySelector('#tableBodyRejected');
                                 obtain_data_table(response.rejected, tableBody, 1, 2);
 
                                 $('#three').html('');
                                 head = document.querySelector('#three')
                                 const div = document.createElement('div');
-                                div.textContent = 'Rechazados(' + response.rejected.length +
+                                div.textContent = 'Rechazados(' + response.rejected.admission
+                                    .length +
                                     ')';
                                 head.appendChild(div);
                             }
 
                         },
                         error: function(xhr, status, error) {
+                            ocultarCarga();
                             console.log(error);
                         }
                     });
                 }
             });
         });
+
+
+        function mostrarCarga() {
+            document.getElementById('loading-message').style.display = 'block';
+        }
+
+        // Función para ocultar el spinner y el mensaje de carga
+        function ocultarCarga() {
+            document.getElementById('loading-message').style.display = 'none';
+        }
     </script>
 @endsection

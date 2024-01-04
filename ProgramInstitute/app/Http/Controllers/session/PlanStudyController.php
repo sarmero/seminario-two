@@ -17,6 +17,6 @@ class PlanStudyController extends Controller
             ->where('program_id', session('program_id'))
             ->groupBy('semester_id');
 
-        return view('session.planStudy', ['subject' => $subject]);
+        return view('session.student.PlanStudyStudent', ['subject' => $subject]);
     }
 }

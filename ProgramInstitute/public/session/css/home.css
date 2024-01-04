@@ -209,6 +209,9 @@
 .session-3 .academic .cont,
 .session-3 .activity .cont {
   padding: 0 10px 0 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .session-3 .academic .cont .item .theme,
@@ -240,4 +243,11 @@
   scrollbar-color: #007 #bada55;
   scrollbar-gutter: stable;
   height: 160px;
+}
+
+.session-3 .activity .cont .item {
+    border: 1px solid #51565e66;
+    padding: 3px;
+    border-radius: 5px;
+
 }

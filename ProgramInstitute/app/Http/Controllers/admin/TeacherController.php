@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Models\Contact;
 use App\Models\district;
 use App\Models\person;
 use App\Models\Program;
+use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -21,9 +23,7 @@ class TeacherController extends Controller
 
     public function __construct()
     {
-        $this->program = Program::select('program.id', 'program.name')
-            ->orderBy('name', 'desc')->get();
-
+        $this->program = Program::orderBy('name', 'desc')->get(['id', 'name']);
         $this->district = district::get();
     }
 
@@ -40,27 +40,27 @@ class TeacherController extends Controller
 
     public function edit($id)
     {
-        $teacher = Teacher::select('person.*','teacher.id as idt','teacher.program_id','contact.email','contact.phone')
-        ->join('person', 'person.id', '=', 'teacher.person_id')
-        ->join('contact', 'person.contact_id', '=', 'contact.id')
-        ->where('teacher.id', $id)
-        ->get()
-        ->first();
+        $teacher = person::with('teacher', 'contact')
+            ->whereHas('teacher', function ($query) use ($id) {
+                $query->where('id', $id);
+            })
+            ->get()
+            ->first();
 
-        return view('admin.teacher.EditTeacher', ['teacher' => $teacher,'program' => $this->program, 'district' => $this->district]);
+        return view('admin.teacher.EditTeacher', ['teacher' => $teacher, 'program' => $this->program, 'district' => $this->district]);
     }
 
     public function show($id)
     {
-        $teacher = Teacher::select('person.id as idp', 'person.first_name', 'person.last_name', 'teacher.id','teacher.code')
-            ->join('person', 'person.id', '=', 'teacher.person_id')
-            ->where('program_id', $id)
-            ->orderBy('person.first_name', 'asc')
+        $teacher = person::with('teacher')
+            ->whereHas('teacher', function ($query) use ($id) {
+                $query->where('program_id', $id);
+            })
             ->get();
 
+
         $nameProgram = Program::where('id', $id)
-            ->select('program.name')
-            ->get()
+            ->get(['name'])
             ->first();
 
         return response()->json(['teacher' => $teacher, 'name' => $nameProgram]);
@@ -156,23 +156,23 @@ class TeacherController extends Controller
 
     public function showPerson($id)
     {
-        $person = Teacher::select(
-            'person.*',
-            'role.description as role',
-            'program.name',
-            'district.description as district',
-            'contact.*',
-        )
-            ->join('person', 'teacher.person_id', '=', 'person.id')
-            ->join('contact', 'person.contact_id', '=', 'contact.id')
-            ->join('role', 'person.role_id', '=', 'role.id')
-            ->join('district', 'person.district_id', '=', 'district.id')
-            ->join('program', 'teacher.program_id', '=', 'program.id')
-            ->where('teacher.person_id', $id)
-            ->get()
-            ->first();
+        $person = Teacher::with([
+            'person' => [
+                'contact',
+                'district',
+                'role'
+            ],
+            'program:id,name'
 
-        return view('admin.usersDetail.UserDetail', ['person' => $person]);
+        ])->where('person_id', $id)->get()->first();
+
+        return view('admin.usersDetail.UserDetail', [
+            'person' => $person->person,
+            'contact' => $person->person->contact,
+            'district' => $person->person->district,
+            'role' => $person->person->role,
+            'program' => $person->program
+        ]);
     }
 
     public function destroy($id)
@@ -181,4 +181,3 @@ class TeacherController extends Controller
         return  redirect()->route('teacher.index');
     }
 }
-

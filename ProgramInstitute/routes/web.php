@@ -51,33 +51,32 @@ Route::post('/login', [LoginController::class, 'startSession'])->name('session')
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 
+Route::middleware(['verifyiRoles:Estudiante,Docente'])->group(function () {
+    Route::get('/users/home', [UserHomeController::class, 'index'])->name('session.home');
+});
+
 Route::middleware(['verifyiRoles:Estudiante'])->group(function () {
 
-    //[--------------------------------Session--------------------------------]
-    Route::get('/users/home', [UserHomeController::class, 'index'])->name('session.home');
-
     //---------------------calificaciones-----------------
-    Route::get('/users/ratings', [RatingsController::class, 'index'])->name('ratings');
-    Route::post('/users/ratings', [RatingsController::class, 'ratings'])->name('ratings.semester');
+    Route::get('/users/ratings/', [RatingsController::class, 'index'])->name('ratings');
+    Route::get('/users/ratings/{id}', [RatingsController::class, 'ratings'])->name('ratings.semester');
 
     //-------------------------offer--------------------
     Route::get('/users/offer', [OfferController::class, 'index'])->name('session.offer');
-    Route::get('/users/offer/inscription', [OfferController::class, 'inscrition'])->name('session.offer.inscrition');
+    Route::get('/users/offer/inscription', [OfferController::class, 'inscription'])->name('session.offer.inscrition');
 
     //-------------------------plan Study--------------------
     Route::get('/users/planstudy', [PlanStudyController::class, 'index'])->name('plan');
 });
 
 Route::middleware(['verifyiRoles:Docente'])->group(function () {
-    //--------------------------------Session---------------------
-    Route::get('/users/home', [UserHomeController::class, 'index'])->name('session.home');
-
     //-------------------------session teacher--------------------
     Route::get('/users/teacher/chairs', [ChairsTeacherController::class, 'index'])->name('teacher.chairs');
     Route::get('/users/teacher/ratings', [RatingTeacherController::class, 'index'])->name('teacher.ratings');
     Route::put('/users/teacher/ratings/update/{id}', [RatingTeacherController::class, 'update'])->name('teacher.ratings.update');
     Route::post('/users/teacher/rating/subject', [RatingTeacherController::class, 'student'])->name('teacher.ratings.subject');
     Route::resource('activity', ActivityTeacherController::class);
+    Route::get('/admin/student/person/{id}', [StudentController::class, 'showPerson'])->name('student.person');
 
 });
 
@@ -98,6 +97,7 @@ Route::middleware(['verifyiRoles:Administrador'])->group(function () {
     Route::get('/admin/admission/person/{id}', [AdminAdmissionController::class, 'showPerson'])->name('admission.person');
     Route::get('/admin/teacher/person/{id}', [TeacherController::class, 'showPerson'])->name('teacher.person');
     Route::get('/admin/student/person/{id}', [StudentController::class, 'showPerson'])->name('student.person');
+    Route::get('/admin/admission/close/{id}', [AdminAdmissionController::class, 'closeOffer'])->name('admission.close');
 
 
 });

@@ -34,7 +34,7 @@
                                 <a class="plain theme" href="{{ route('content', $pro->id) }}">Contenido</a>
                                 <a class="theme" href="{{ route('preinscription') }}">Preinscripcion</a>
                                 <div class="theme">
-                                    @if ($pro->state != 0)
+                                    @if (count($pro->offer) > 0)
                                         Ofertado
                                     @else
                                         Pendiente
@@ -42,7 +42,12 @@
                                 </div>
                             </div>
                             <div class="description">
-                                <p>{{ substr($pro->description, 0, 300) . '...' }}
+                                <p class="text-break">
+                                    @if (strlen($pro->description) > 300)
+                                        {{ substr($pro->description, 0, 300) . '...' }}
+                                    @else
+                                        {{ $pro->description }}
+                                    @endif
                                 </p>
                             </div>
                         </div>

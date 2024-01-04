@@ -52,7 +52,10 @@ class User extends Authenticatable
     public function hasAnyRole($roles)
     {
         return $this->person()
-            ->join('role', 'person.role_id', '=', 'role.id')
-            ->whereIn('role.description', $roles)->exists();
+        ->whereHas('role', function ($query) use ($roles) {
+            $query->where('description', $roles);
+        })->exists();
+            // ->join('role', 'person.role_id', '=', 'role.id')
+            // ->whereIn('role.description', $roles)->exists();
     }
 }

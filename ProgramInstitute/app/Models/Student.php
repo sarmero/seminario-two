@@ -17,7 +17,9 @@ class Student extends Model
     protected $fillable = [
 		'code',
 		'admission_id',
-		'semester_id'
+		'semester_id',
+        'offer_id',
+        'person_id'
 	];
 
     public function admission(): BelongsTo
@@ -30,8 +32,18 @@ class Student extends Model
         return $this->belongsTo(Semester::class);
     }
 
-    public function inscription(): HasMany
+    public function inscriptionSubject(): HasMany
     {
-        return $this->hasMany(Inscription::class);
+        return $this->hasMany(InscriptionSubject::class);
+    }
+
+    public function offer(): BelongsTo
+    {
+        return $this->belongsTo(Offer::class);
+    }
+
+    public function person(): BelongsTo
+    {
+        return $this->belongsTo(Person::class);
     }
 }

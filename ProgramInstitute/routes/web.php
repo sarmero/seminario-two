@@ -33,7 +33,6 @@ use App\Http\Controllers\session\RatingTeacherController;
 |
 */
 
-
 Route::get('/', [homeController::class, 'index'])->name('home');
 Route::get('/about', [homeController::class, 'about'])->name('about');
 Route::get('/preinscription', [PreinscriptionController::class, 'index'])->name('preinscription');
@@ -42,30 +41,20 @@ Route::get('/admission', [AdmissionController::class, 'index'])->name('admission
 Route::post('/admission', [AdmissionController::class, 'search'])->name('search.users');
 Route::get('/programs', [ProgramController::class, 'index'])->name('programs');
 Route::get('/content/{id}', [ProgramController::class, 'content'])->name('content');
-
-
-//[---------------------------------login--------------------------------]
-// Route::get('/session', [homController::class, 'index'])->name('session.home');
 Route::get('/login', [LoginController::class, 'index'])->name('login');
 Route::post('/login', [LoginController::class, 'startSession'])->name('session');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 
-Route::middleware(['verifyiRoles:Estudiante,Docente'])->group(function () {
+Route::middleware(['verifyiRoles:Docente,Estudiante'])->group(function () {
     Route::get('/users/home', [UserHomeController::class, 'index'])->name('session.home');
 });
 
 Route::middleware(['verifyiRoles:Estudiante'])->group(function () {
-
-    //---------------------calificaciones-----------------
     Route::get('/users/ratings/', [RatingsController::class, 'index'])->name('ratings');
     Route::get('/users/ratings/{id}', [RatingsController::class, 'ratings'])->name('ratings.semester');
-
-    //-------------------------offer--------------------
     Route::get('/users/offer', [OfferController::class, 'index'])->name('session.offer');
     Route::get('/users/offer/inscription', [OfferController::class, 'inscription'])->name('session.offer.inscrition');
-
-    //-------------------------plan Study--------------------
     Route::get('/users/planstudy', [PlanStudyController::class, 'index'])->name('plan');
 });
 
@@ -80,8 +69,11 @@ Route::middleware(['verifyiRoles:Docente'])->group(function () {
 
 });
 
+Route::middleware(['verifyiRoles:Docente,Administrador'])->group(function () {
+    Route::get('/admin/student/person/{id}', [StudentController::class, 'showPerson'])->name('student.person');
+});
+
 Route::middleware(['verifyiRoles:Administrador'])->group(function () {
-    //[--------------------------------Admin----------------------------------]
     Route::get('/admin/welcome', [AdminHomeController::class, 'index'])->name('admin');
 
     Route::resource('program', AdminProgramController::class);
@@ -96,7 +88,6 @@ Route::middleware(['verifyiRoles:Administrador'])->group(function () {
     Route::get('/student/program/{id}', [StudentController::class, 'getPrograms'])->name('getSubject');
     Route::get('/admin/admission/person/{id}', [AdminAdmissionController::class, 'showPerson'])->name('admission.person');
     Route::get('/admin/teacher/person/{id}', [TeacherController::class, 'showPerson'])->name('teacher.person');
-    Route::get('/admin/student/person/{id}', [StudentController::class, 'showPerson'])->name('student.person');
     Route::get('/admin/admission/close/{id}', [AdminAdmissionController::class, 'closeOffer'])->name('admission.close');
 
 

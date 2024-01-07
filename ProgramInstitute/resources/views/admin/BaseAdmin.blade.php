@@ -54,8 +54,8 @@
                     <li class="nav-item dropdown">
                         <a id="navbarDropdown" class=" dropdown-toggle" href="#" role="button"
                             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                            @if (session('photo'))
-                                <img src="{{ asset(session('photo')) }}" alt="user" width="30" height="30"
+                            @if (session('image') )
+                                <img src="{{ asset('storage/profile/'.session('image')) }}" alt="user" width="30" height="30"
                                     class="d-inline-block align-text-center">
                             @else
                                 <img src="{{ asset('image/profile/profile.png') }}" alt="user" width="30"

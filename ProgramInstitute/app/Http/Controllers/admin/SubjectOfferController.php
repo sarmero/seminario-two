@@ -54,23 +54,22 @@ class SubjectOfferController extends Controller
     {
         $offer = OfferSubject::with([
             'subject:id,semester_id,description',
-            'programming' => [
-                'teacher' => [
-                    'person:id,first_name,last_name'
-                ]
+            'teacher' => [
+                'person:id,first_name,last_name'
             ]
         ])->whereHas('subject', function ($query) use ($id) {
             $query->where('program_id', $id);
         })
             ->where('calendar_id', session('calendar'))
-            ->get(['id', 'quotas', 'subject_id']);
+            ->get(['id', 'quotas', 'subject_id','teacher_id']);
 
         return response()->json(['offer' => $offer]);
     }
 
     public function getSubjectTeacher($id)
     {
-        $teacher = person::with('teacher')->whereHas('teacher', function ($query) use ($id) {
+        $teacher = person::with('teacher')
+        ->whereHas('teacher', function ($query) use ($id) {
             $query->where('program_id', $id);
         })
             ->orderBy('first_name', 'asc')
@@ -100,15 +99,11 @@ class SubjectOfferController extends Controller
             return redirect()->back()->withErrors($validador)->withInput();
         }
 
-        $offer = OfferSubject::create([
+        OfferSubject::create([
             'subject_id' => $request->subject,
             'quotas' => $request->quotas,
             'calendar_id' =>  session('calendar'),
-        ]);
-
-        Programming::create([
             'teacher_id' => $request->teacher,
-            'offer_subject_id' => $offer->id,
         ]);
 
         return redirect()->route('offer-subject.index');
@@ -128,12 +123,6 @@ class SubjectOfferController extends Controller
         $offer = OfferSubject::find($id);
         $offer->update([
             'quotas' => $request->quotas,
-        ]);
-
-        $idp = Programming::where('offer_subject_id', $id)->get(['id'])->first();
-
-        $programming = Programming::find($idp->id);
-        $programming->update([
             'teacher_id' => $request->teacher,
         ]);
 

@@ -30,9 +30,9 @@ class Teacher extends Model
         return $this->belongsTo(Program::class);
     }
 
-    public function programming(): HasMany
+    public function offerSubject(): HasMany
     {
-        return $this->hasMany(Programming::class);
+        return $this->hasMany(OfferSubject::class);
     }
 
     protected static function boot()
@@ -47,7 +47,7 @@ class Teacher extends Model
                 [
                     'username' =>  $teacher->code,
                     'person_id' => $teacher->person_id,
-                    'password' => bcrypt(substr($person->number_document, -4)),
+                    'password' => bcrypt(substr($person->document, -4)),
                 ]
             );
         });

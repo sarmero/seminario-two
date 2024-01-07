@@ -22,13 +22,13 @@ class RatingsController extends Controller
     public function ratings($id)
     {
         $subject = InscriptionSubject::with([
-            'offerSubject:id,subject_id'=>[
+            'offerSubject:id,subject_id,teacher_id'=>[
                 'subject:id,description,semester_id',
-                'programming.teacher.person:id,first_name,last_name'
+                'teacher.person:id,first_name,last_name'
             ]
         ])->whereHas('offerSubject.subject', function ($query) use ($id){
             $query->where('semester_id', '=', $id);
-        })->whereHas('inscription.student', function ($query){
+        })->whereHas('student', function ($query){
             $query->where('code', '=', session('code'));
         })->get();
 

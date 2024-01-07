@@ -20,8 +20,8 @@
                 <div class="row">
                     <div class="col-3">
                         <div class="image">
-                            @if ($person->photo != '')
-                                <img src="{{ asset('storage/profile/' . $person->photo) }}" alt="user" width="200"
+                            @if ($person->image != '')
+                                <img src="{{ asset('storage/profile/' . $person->image) }}" alt="user" width="200"
                                     height="230" class="d-inline-block align-text-center">
                             @else
                                 <img src="{{ asset('image/profile/profilex.jpg') }}" alt="user" width="150"
@@ -57,7 +57,7 @@
 
                             <div class="inf">
                                 <div class="item">N. Identificacion</div>
-                                <div class="descip">{{ $person->number_document }}</div>
+                                <div class="descip">{{ $person->document }}</div>
                             </div>
 
                         </div>
@@ -73,12 +73,12 @@
 
                             <div class="inf">
                                 <div class="item">Email</div>
-                                <div class="descip">{{ $contact->email }}</div>
+                                <div class="descip">{{ $person->email }}</div>
                             </div>
 
                             <div class="inf">
                                 <div class="item">Telefono</div>
-                                <div class="descip">{{ $contact->phone }}</div>
+                                <div class="descip">{{ $person->phone }}</div>
                             </div>
 
                             <div class="inf">

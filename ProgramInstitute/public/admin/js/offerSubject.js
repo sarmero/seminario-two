@@ -28,8 +28,6 @@ $(document).ready(function () {
         }
     });
 
-
-
 });
 
 function obtain_data_table(response) {
@@ -53,20 +51,10 @@ function obtain_data_table(response) {
         const opt = document.createElement('td');
         opt.classList.add('text-center');
 
-        if (offer.programming.length > 0) {
-            $.each(offer.programming, function (index, pro) {
-                person = pro.teacher.person;
-                teacher.textContent = person.first_name + ' ' + person.last_name
-            });
-        } else {
-            teacher.textContent = 'indefinido';
-        }
-
-
-
         ind.textContent = index + 1;
         subject.textContent = offer.subject.description;
         semester.textContent = offer.subject.semester_id;
+        teacher.textContent = offer.teacher.person.first_name + ' ' + offer.teacher.person.last_name
 
         quotas.textContent = offer.quotas;
         opt.innerHTML = `

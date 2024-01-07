@@ -15,9 +15,8 @@ class ChairsTeacherController extends Controller
         $cal = session('calendar');
 
         $chairs = OfferSubject::with('subject:id,description,semester_id')
-            ->whereHas('programming', function ($query) use ($tea) {
-                $query->where('teacher_id', $tea);
-            })->where('calendar_id', $cal)
+            ->where('teacher_id', $tea)
+            ->where('calendar_id', $cal)
             ->get(['id', 'subject_id']);
 
             // echo $chairs;

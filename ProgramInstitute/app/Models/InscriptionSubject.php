@@ -16,12 +16,12 @@ class InscriptionSubject extends Model
     protected $fillable = [
         'note',
         'offer_subject_id',
-        'inscription_id'
+        'student_id'
     ];
 
-    public function inscription(): BelongsTo
+    public function student(): BelongsTo
     {
-        return $this->belongsTo(Inscription::class);
+        return $this->belongsTo(Student::class);
     }
 
     public function offerSubject(): BelongsTo

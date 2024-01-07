@@ -1,7 +1,7 @@
 @extends('auth.BaseAuth')
 
 @section('style')
-    <link rel="stylesheet" href="{{ asset('start/css/login.css') }}">
+    <link rel="stylesheet" href="{{ asset('auth/auth.css') }}">
 @endsection
 
 @section('title')
@@ -16,7 +16,7 @@
     </div>
 
     <div class="container">
-        <div class="row justify-content-center">
+        {{-- <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">Acceso</div>
@@ -57,6 +57,38 @@
                             </div>
                         </form>
                     </div>
+                </div>
+            </div>
+        </div> --}}
+
+        <div class="login-reg-panel">
+
+            <div class="register-info-box">
+                <img src="{{ asset('image/icon/icon.png') }}" class="logo">
+                <p class="text-center">Instituto Tecnico <br> Visionarios del Mañana</p>
+            </div>
+
+            <div class="white-panel">
+                <div class="login-show">
+                    <form method="POST" action="{{ route('session') }}">
+                        @csrf
+                        <h2>Acceso</h2>
+
+                        <input type="text" name="username" class="form-control" placeholder="Username">
+                        @error('username')
+                            <div class="text-small text-danger">{{ $message }}</div>
+                        @enderror
+
+                        <input type="password" name="password" class="form-control" placeholder="Password">
+
+                        @error('password')
+                            <div class="text-small text-danger">{{ $message }}</div>
+                        @enderror
+
+                        <button type="submit" class="btn btn-success btn-sm">Aceder</button>
+                        <br><br>
+                        <a href="">¿Has olvidado tu contraseña?</a>
+                    </form>
                 </div>
             </div>
         </div>

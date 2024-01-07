@@ -12,12 +12,12 @@ class OfferController extends Controller
     public function index()
     {
         session(['page' => 'Ofertas']);
-        $inscription = session('inscription');
+        $student = session('student');
 
         $offer = OfferSubject::with(
             'subject:id,description'
-        )->withCount(['inscriptionSubject as registered' => function ($query) use ($inscription) {
-            $query->where('inscription_id', $inscription);
+        )->withCount(['inscriptionSubject as registered' => function ($query) use ($student) {
+            $query->where('student_id', $student);
         }])->whereHas('subject', function ($query) {
             $query->where('program_id', '=', session('program_id'))
             ->where('semester_id', '<=', session('semester'));
@@ -32,7 +32,7 @@ class OfferController extends Controller
     {
         InscriptionSubject::create([
             'offer_subject_id' => $request->id,
-            'inscription_id' => session('inscription'),
+            'student_id' => session('student'),
         ]);
 
         return response()->json(['mensaje' => 'Inscription realizada correctamente ']);

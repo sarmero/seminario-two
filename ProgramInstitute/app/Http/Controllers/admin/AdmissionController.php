@@ -88,7 +88,6 @@ class AdmissionController extends Controller
         $per = Offer::with([
             'admission' => [
                 'person' => [
-                    'contact',
                     'district',
                     'role'
                 ],
@@ -114,7 +113,6 @@ class AdmissionController extends Controller
 
         return view('admin.usersDetail.UserDetail', [
             'person' => $person,
-            'contact' => $person->contact,
             'district' => $person->district,
             'role' => $person->role,
             'state' => $state,
@@ -130,6 +128,6 @@ class AdmissionController extends Controller
             'state_offer_id' => 2,
         ]);
 
-        return response()->json(['mensaje' => 'Elemento eliminado correctamente ']);
+        return response()->json(['mensaje' => 'Elemento atualizado correctamente ']);
     }
 }

@@ -41,7 +41,7 @@ class PreinscriptionController extends Controller
             'lastName' => 'required|regex:/^([A-Za-zÑñ\s]*)$/|between:3,200',
             'phone' => 'required|integer|min:10',
             'mail' => 'required|email|unique:contact,email|max:200',
-            'photo' => 'required|image|mimes:jpg,png,jpeg|max:2040',
+            'image' => 'required|image|mimes:jpg,png,jpeg|max:2040',
         ]);
 
         if ($validador->fails()) {
@@ -51,20 +51,16 @@ class PreinscriptionController extends Controller
         $url = time() . '.' . $request->photo->extension();
         $request->photo->move(public_path('storage/profile'), $url);
 
-        $contact = Contact::create([
-            'email' => $request->mail,
-            'phone' => $request->phone,
-        ]);
-
         $person = person::create([
-            'number_document' => $request->document,
+            'document' => $request->document,
             'first_name' => $request->firstName,
             'last_name' => $request->lastName,
             'gender' => $request->gender,
-            'contact_id' => $contact->id,
             'district_id' => $request->district,
             'role_id' => 3,
-            'photo' => $url,
+            'image' => $url,
+            'email' => $request->mail,
+            'phone' => $request->phone,
         ]);
 
         Admission::create([

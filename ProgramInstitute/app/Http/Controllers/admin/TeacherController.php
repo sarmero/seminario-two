@@ -84,20 +84,16 @@ class TeacherController extends Controller
         $url = time() . '.' . $request->photo->extension();
         $request->photo->move(public_path('storage/profile'), $url);
 
-        $contact = Contact::create([
-            'email' => $request->mail,
-            'phone' => $request->phone,
-        ]);
-
         $person = person::create([
-            'number_document' => $request->document,
+            'document' => $request->document,
             'first_name' => $request->firstName,
             'last_name' => $request->lastName,
             'gender' => $request->gender,
-            'contact_id' => $contact->id,
             'district_id' => $request->district,
             'role_id' => 3,
-            'photo' => $url,
+            'image' => $url,
+            'email' => $request->mail,
+            'phone' => $request->phone,
         ]);
 
         Teacher::create([
@@ -117,7 +113,7 @@ class TeacherController extends Controller
             'lastName' => 'required|regex:/^([A-Za-zÑñ\s]*)$/|between:3,200',
             'phone' => 'required|integer|min:10',
             'mail' => 'required|email|max:200',
-            'photo' => 'required|image|mimes:jpg,png,jpeg|max:2040',
+            'image' => 'required|image|mimes:jpg,png,jpeg|max:2040',
         ]);
 
         if ($validador->fails()) {
@@ -129,20 +125,16 @@ class TeacherController extends Controller
 
         $teacher = Teacher::find($id);
         $person = person::find($teacher->person_id);
-        $contact = Contact::find($person->contact_id);
-
-        $contact->update([
-            'email' => $request->mail,
-            'phone' => $request->phone,
-        ]);
 
         $person->update([
-            'number_document' => $request->document,
+            'document' => $request->document,
             'first_name' => $request->firstName,
             'last_name' => $request->lastName,
             'gender' => $request->gender,
             'district_id' => $request->district,
-            'photo' => $url,
+            'image' => $url,
+            'email' => $request->mail,
+            'phone' => $request->phone,
         ]);
 
         $teacher->update([
@@ -158,7 +150,6 @@ class TeacherController extends Controller
     {
         $person = Teacher::with([
             'person' => [
-                'contact',
                 'district',
                 'role'
             ],
@@ -168,7 +159,6 @@ class TeacherController extends Controller
 
         return view('admin.usersDetail.UserDetail', [
             'person' => $person->person,
-            'contact' => $person->person->contact,
             'district' => $person->person->district,
             'role' => $person->person->role,
             'program' => $person->program

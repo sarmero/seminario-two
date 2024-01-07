@@ -55,7 +55,5 @@ class User extends Authenticatable
         ->whereHas('role', function ($query) use ($roles) {
             $query->where('description', $roles);
         })->exists();
-            // ->join('role', 'person.role_id', '=', 'role.id')
-            // ->whereIn('role.description', $roles)->exists();
     }
 }

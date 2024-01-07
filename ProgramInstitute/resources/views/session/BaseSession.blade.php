@@ -9,7 +9,8 @@
     <title>@yield('title')</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('image/icon/v1_28.png') }}" />
     <link rel="stylesheet" href="{{ asset('css/font.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/all.min.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('css/all.min.css') }}"> --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/material-icon.css') }}">
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('start/css/footer.css') }}">
@@ -55,8 +56,8 @@
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class=" dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                @if (session('photo'))
-                                    <img src="{{ asset('storage/profile/' . session('photo')) }}" alt="user"
+                                @if (session('image'))
+                                    <img src="{{ asset('storage/profile/' . session('image')) }}" alt="user"
                                         width="30" height="30" class="d-inline-block align-text-center">
                                 @else
                                     <img src="{{ asset('image/profile/profile.png') }}" alt="user" width="30"
@@ -102,6 +103,7 @@
         @yield('content')
 
         @include('common.footer')
+
     </div>
     {{-- Script --}}
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>

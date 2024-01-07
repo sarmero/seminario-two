@@ -3,16 +3,12 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admission;
 use App\Models\Calendar;
-use App\Models\Contact;
 use App\Models\district;
 use App\Models\Offer;
 use App\Models\person;
-use App\Models\Program;
 use App\Models\Student;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class StudentController extends Controller
@@ -27,13 +23,7 @@ class StudentController extends Controller
     {
         $district = district::get();
 
-        $student = Student::with([
-            'admission:id,person_id' => [
-                'person' => [
-                    'contact'
-                ]
-            ]
-        ])
+        $student = Student::with('person')
             ->where('id', $id)
             ->get()
             ->first();
@@ -42,32 +32,29 @@ class StudentController extends Controller
 
         return view('admin.student.EditStudent', [
             'student' => $student->id,
-            'person'=> $student->admission->person,
-            'contact'=>$student->admission->person->contact,
+            'person' => $student->person,
             'district' => $district
         ]);
     }
 
     public function getPrograms($id)
     {
-        $program = Program::with('offer:id,program_id')
-            ->whereHas('offer', function ($query) use ($id) {
-                $query->where('calendar_id', $id)
-                    ->where('state_offer_id', '2');
+        $program = Offer::with('program:id,name')
+            ->whereHas('program', function ($query) use ($id) {
+                $query->orderBy('name', 'desc');
             })
-            ->orderBy('name', 'desc')
-            ->get(['id', 'name']);
+            ->where('calendar_id', $id)
+            ->where('state_offer_id', '2')
+            ->get(['id', 'program_id']);
 
         return response()->json(['program' => $program]);
     }
 
     public function show($id)
     {
-        $student = Admission::with([
-            'person:id,first_name,last_name',
-            'student:id,admission_id,code'
-        ])->where('offer_id', $id)
-            ->get(['id', 'person_id']);
+        $student = Student::with('person:id,first_name,last_name')
+            ->where('offer_id', $id)
+            ->get(['id', 'person_id', 'code']);
 
         return response()->json([
             'student' => $student,
@@ -76,42 +63,27 @@ class StudentController extends Controller
 
     public function showPerson($id)
     {
-        $per = Offer::with([
-            'admission' => [
-                'person' => [
-                    'contact',
-                    'district',
-                    'role'
-                ],
-                'student' => [
-                    'semester'
-                ]
+        $student = Student::with([
+            'offer' => [
+                'modality',
+                'program:id,name'
             ],
-            'modality',
-            'program:id,name'
+            'semester',
+            'person' => [
+                'district',
+                'role'
+            ],
 
-        ])->whereHas(
-            'admission',
-            function ($query) use ($id) {
-                $query->where('id', $id);
-            }
-        )->get()->first();
-
-        foreach ($per->admission as  $adm) {
-            $person = $adm->person;
-            foreach ($adm->student as  $std) {
-                $student = $std;
-            }
-        }
+        ])->where('id', $id)
+        ->get()->first();
 
         return view('admin.usersDetail.UserDetail', [
-            'person' => $person,
-            'contact' => $person->contact,
-            'district' => $person->district,
-            'role' => $person->role,
+            'person' => $student->person,
+            'district' => $student->person->district,
+            'role' => $student->person->role,
             'student' => $student,
-            'modality' => $per->modality,
-            'program' => $per->program
+            'modality' => $student->offer->modality,
+            'program' => $student->offer->program
         ]);
     }
 
@@ -124,7 +96,7 @@ class StudentController extends Controller
             'lastName' => 'required|regex:/^([A-Za-zÑñ\s]*)$/|between:3,200',
             'phone' => 'required|integer|min:10',
             'mail' => 'required|email|max:200',
-            'photo' => 'required|image|mimes:jpg,png,jpeg|max:2040',
+            'image' => 'required|image|mimes:jpg,png,jpeg|max:2040',
         ]);
 
         if ($validador->fails()) {
@@ -136,12 +108,6 @@ class StudentController extends Controller
 
 
         $person = person::find($id);
-        $contact = Contact::find($person->contact_id);
-
-        $contact->update([
-            'email' => $request->mail,
-            'phone' => $request->phone,
-        ]);
 
         $person->update([
             'number_document' => $request->document,
@@ -149,7 +115,9 @@ class StudentController extends Controller
             'last_name' => $request->lastName,
             'gender' => $request->gender,
             'district_id' => $request->district,
-            'photo' => $url,
+            'image' => $url,
+            'email' => $request->mail,
+            'phone' => $request->phone,
         ]);
 
         return  redirect()->route('student.index');

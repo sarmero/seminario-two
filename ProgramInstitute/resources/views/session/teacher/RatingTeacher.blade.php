@@ -38,7 +38,7 @@
                                     <th scope="col">code</th>
                                     <th scope="col">Nombre</th>
                                     <th scope="col">Apellido</th>
-                                    <th scope="col">Nota</th>
+                                    <th scope="col">Calificacion</th>
                                     <th class="text-center" scope="col">opcion</th>
                                 </tr>
                             </thead>
@@ -48,20 +48,20 @@
 
                                     <tr>
                                         <td class="text-center">{{ $i + 1 }}</td>
-                                        <td>{{ $item->inscription->student->code }}</td>
-                                        <td>{{ $item->inscription->student->admission->person->first_name }}</td>
-                                        <td>{{ $item->inscription->student->admission->person->last_name }}</td>
+                                        <td>{{ $item->student->code }}</td>
+                                        <td>{{ $item->student->person->first_name }}</td>
+                                        <td>{{ $item->student->person->last_name }}</td>
                                         <td>{{ $item->note }}</td>
 
                                         <td class="text-center">
 
-                                            <a href="{{ route('student.person', $item->inscription->student->admission->person->id) }}" title="visualizar"
+                                            <a href="{{ route('student.person', $item->student->id) }}" title="visualizar"
                                                 target="_blank">
                                                 <i class="fas fa-eye"></i>
                                             </a>
 
                                             <a href="#"
-                                                onclick="atualizarElementosForm('{{ $item->id }}', '{{ $item->inscription->student->admission->person->first_name . ' ' . $item->inscription->student->admission->person->last_name }}','{{ $item->note }}');"title="Editar">
+                                                onclick="atualizarElementosForm('{{ $item->id }}', '{{ $item->student->person->first_name . ' ' . $item->student->person->last_name }}','{{ $item->note }}');"title="Editar">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                         </td>

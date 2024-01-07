@@ -1,1 +1,4 @@
 https://dbdiagram.io/d/Instituto-6515f45bffbf5169f0b3ae77
+
+new:
+https://dbdiagram.io/d/instituto_tecnico-658e3abd89dea62799b5740f

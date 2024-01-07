@@ -19,11 +19,10 @@ class AdmissionController extends Controller
 
     public function search(Request $request)
     {
-        $number = $request->input('identification');
-        $person = Person::where('number_document', $number)
-            ->select('id', 'first_name', 'last_name')
+        $number = $request->identification;
+        $person = Person::where('document', $number)
             ->get()
-            ->first();
+            ->first(['id', 'first_name', 'last_name']);
 
         session(['aceptado' => false]);
         session(['rechazado' => false]);
@@ -44,7 +43,7 @@ class AdmissionController extends Controller
                 ]
             ])
                 ->where('person_id', $person->id)
-                ->first(['admission.id', 'admission.offer_id','admission.state_id']);
+                ->first(['id', 'offer_id','state_id']);
 
             // echo $admitted;
 

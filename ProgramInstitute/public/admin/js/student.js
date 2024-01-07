@@ -18,7 +18,8 @@ $(document).ready(function () {
                         $('#program').html('<option value="">Elije...</option>');
 
                         $.each(response.program, function (index, item) {
-                            $('#program').append('<option value="' + item.id + '">' + item.name + '</option>');
+                            console.log(item);
+                            $('#program').append('<option value="' + item.id + '">' + item.program.name + '</option>');
                         });
                     }
                 },
@@ -73,18 +74,15 @@ $(document).ready(function () {
             const opt = document.createElement('td');
             opt.classList.add('text-center');
 
-            student.student.forEach(ele => {
-                std = ele;
-            });
 
             ind.textContent = index + 1;
             cod.textContent = student.code;
             name.textContent = student.person.first_name;
             last.textContent = student.person.last_name;
             opt.innerHTML = `
-                <a href="/admin/student/person/ ${student.person.id}" title="descripcion" target="_blank"><i class="fas fa-eye"></i></a>
-                <a href="/student/${std.id}/edit" title="Editar"><i class="fas fa-edit mx-1"></i></a>
-                <a href="#" onclick="deleteElement('${std.id}');" title="Eliminar"><i class="fas fa-trash-alt"></i></a>
+                <a href="/admin/student/person/ ${student.id}" title="descripcion" target="_blank"><i class="fas fa-eye"></i></a>
+                <a href="/student/${student.id}/edit" title="Editar"><i class="fas fa-edit mx-1"></i></a>
+                <a href="#" onclick="deleteElement('${student.id}');" title="Eliminar"><i class="fas fa-trash-alt"></i></a>
             `;
 
             rowData.appendChild(ind);

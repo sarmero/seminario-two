@@ -56,6 +56,7 @@
                         },
                         dataType: 'json',
                         success: function(response) {
+                            console.log(response);
                             if (response.subject.length > 0) {
                                 $('.subject').html('');
                                 ontain_data_table(response.subject);
@@ -98,7 +99,7 @@
 
                     sub.textContent = subject.offer_subject.subject.description;
 
-                    const person = subject.offer_subject.programming[0].teacher.person
+                    const person = subject.offer_subject.teacher.person
 
                     tea.innerHTML = `
                         Docente: <span><strong>${person.first_name} ${person.last_name}</strong> </span>

@@ -5,10 +5,8 @@ namespace App\Http\Controllers\session;
 use App\Http\Controllers\Controller;
 use App\Models\InscriptionSubject;
 use App\Models\OfferSubject;
-use App\Models\Student;
-use App\Models\Subject;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
+
 
 class RatingTeacherController extends Controller
 {
@@ -33,10 +31,8 @@ class RatingTeacherController extends Controller
         $id = $request->subject;
 
         $studentx = OfferSubject::with([
-            'inscriptionSubject:id,note,offer_subject_id,inscription_id' => [
-                'inscription:id,student_id' => [
-                    'student.admission.person:id,first_name,last_name'
-                ]
+            'inscriptionSubject:id,note,offer_subject_id,student_id' => [
+                'student.person:id,first_name,last_name'
             ]
         ])->where('id', $id)->get(['id']);
 
@@ -51,15 +47,9 @@ class RatingTeacherController extends Controller
 
     private function subject()
     {
-        $tea = session('teacher');
-        $cal = session('calendar');
-
         return OfferSubject::with('subject:id,description,semester_id')
-            ->whereHas('programming', function ($query) use ($tea) {
-                $query->where('teacher_id', $tea);
-            })->where('calendar_id', $cal)
+            ->where('teacher_id',  session('teacher'))
+            ->where('calendar_id', session('calendar'))
             ->get(['id', 'subject_id']);
     }
-
-    
 }

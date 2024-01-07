@@ -28,9 +28,9 @@ class Offer extends Model
         return $this->hasMany(Admission::class);
     }
 
-    public function inscription(): HasMany
+    public function student(): HasMany
     {
-        return $this->hasMany(Inscription::class);
+        return $this->hasMany(Student::class);
     }
 
     public function stateOffer(): BelongsTo
@@ -61,29 +61,26 @@ class Offer extends Model
             if ($offer->state_offer_id == 2) {
                 $admi = Admission::with('person')
                     ->where('state_id', '1')->where('offer_id', $offer->id)
-                    ->get(['id', 'person_id']);
+                    ->get(['id', 'person_id','offer_id']);
 
 
                 foreach ($admi as $i => $adm) {
                     $code = static::uniqueCode();
-                    $std =Student::create(
+                    Student::create(
                         [
                             'code' => $code,
                             'admission_id' => $adm->id,
                             'semester_id' => 1,
+                            'person_id' => $adm->person_id,
+                            'offer_id' => $adm->offer_id,
                         ]
                     );
-
-                    Inscription::create([
-                        'student_id'=> $std->id,
-                        'offer_id'=>$offer->id,
-                    ]);
 
                     User::create(
                         [
                             'username' =>  $code,
                             'person_id' => $adm->person_id,
-                            'password' => bcrypt(substr($adm->person->number_document, -4)),
+                            'password' => bcrypt(substr($adm->person->document, -4)),
                         ]
                     );
 

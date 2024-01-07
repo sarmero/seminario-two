@@ -17,15 +17,15 @@ class verifyRoles
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         if (Auth::check()) {
-
-            if (Auth::User()->hasAnyRole($roles)) {
-                return $next($request);
-            } else {
-                return redirect('/');
+            foreach ($roles as $role) {
+                if (Auth::User()->hasAnyRole($role)) {
+                    return $next($request);
+                }
             }
+
+            return redirect('/');
         }
 
         return redirect()->route('login');
     }
 }
-

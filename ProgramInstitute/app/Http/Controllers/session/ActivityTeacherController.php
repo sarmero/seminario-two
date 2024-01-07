@@ -14,13 +14,10 @@ class ActivityTeacherController extends Controller
 {
     public function index()
     {
-        $tea = session('teacher');
-        $cal = session('calendar');
-
+        session(['page' => 'Actividades']);
         $subject = OfferSubject::with('subject:id,description')
-            ->whereHas('programming', function ($query) use ($tea) {
-                $query->where('teacher_id', $tea);
-            })->where('calendar_id', $cal)
+            ->where('teacher_id', session('teacher'))
+            ->where('calendar_id', session('calendar'))
             ->get(['id', 'subject_id']);
 
 
@@ -33,9 +30,8 @@ class ActivityTeacherController extends Controller
         $cal = session('calendar');
 
         $subject = OfferSubject::with('subject:id,description')
-            ->whereHas('programming', function ($query) use ($tea) {
-                $query->where('teacher_id', $tea);
-            })->where('calendar_id', $cal)
+            ->where('teacher_id', $tea)
+            ->where('calendar_id', $cal)
             ->get(['id', 'subject_id']);
 
         return view('session.teacher.activity.CreateActivity', ['subject' => $subject]);
@@ -99,9 +95,7 @@ class ActivityTeacherController extends Controller
         $tea = session('teacher');
 
         $activity = OfferSubject::with('activity')
-            ->whereHas('programming', function ($query) use ($tea) {
-                $query->where('teacher_id', $tea);
-            })
+            ->where('teacher_id', $tea)
             ->where('id', $id)
             ->get(['id'])->first();
 

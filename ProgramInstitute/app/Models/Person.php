@@ -15,20 +15,16 @@ class person extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'number_document',
+        'document',
         'first_name',
         'last_name',
         'gender',
-        'contact_id',
         'district_id',
         'role_id',
-        'photo',
+        'image',
+        'email',
+        'phone'
     ];
-
-    public function contact(): BelongsTo
-    {
-        return $this->belongsTo(Contact::class);
-    }
 
     public function admission(): HasMany
     {
@@ -38,6 +34,11 @@ class person extends Model
     public function user(): HasOne
     {
         return $this->hasOne(User::class);
+    }
+
+    public function student(): HasOne
+    {
+        return $this->hasOne(Student::class);
     }
 
     public function teacher(): HasOne

@@ -8,7 +8,6 @@
     Home
 @endsection
 
-
 @section('content')
     <div id="page-top">
         <div class="start">
@@ -59,6 +58,7 @@
                                 estudiantes. Aquí, no solo fomentamos el aprendizaje, sino que también cultivamos valores,
                                 habilidades y una mentalidad abierta que les permitirá enfrentar los desafíos del mundo
                                 moderno.</p>
+                            
                         </div>
                     </div>
 

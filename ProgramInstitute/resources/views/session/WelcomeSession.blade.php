@@ -19,8 +19,8 @@
                             <img src="{{ asset('image/profile/cover.jpg') }}" alt="">
 
                             <div class="photo">
-                                @if (session('photo'))
-                                    <img src="{{ asset('storage/profile/'.session('photo')) }}" alt="user">
+                                @if (session('image'))
+                                    <img src="{{ asset('storage/profile/'.session('image')) }}" alt="user">
                                 @else
                                     <img src="{{ asset('image/profile/profile.png') }}" alt="">
                                 @endif

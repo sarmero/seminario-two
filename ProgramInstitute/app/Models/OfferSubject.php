@@ -14,9 +14,10 @@ class OfferSubject extends Model
     public $timestamps = false;
 
     protected $fillable = [
+		'quotas',
 		'subject_id',
+        'teacher_id',
 		'calendar_id',
-		'quotas'
 	];
 
     public function subject(): BelongsTo
@@ -34,9 +35,9 @@ class OfferSubject extends Model
         return $this->hasMany(InscriptionSubject::class);
     }
 
-    public function programming(): HasMany
+    public function teacher(): BelongsTo
     {
-        return $this->hasMany(Programming::class);
+        return $this->belongsTo(Teacher::class);
     }
 
     public function activity(): HasMany

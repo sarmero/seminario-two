@@ -1,0 +1,36 @@
+
+
+----------------------Generador de migraciones ----------------------------
+link: https://github.com/kitloong/laravel-migrations-generator
+link:yt-> https://www.youtube.com/watch?v=baQNTofu7CI
+
+1: instalamos la libreria
+::comando->  composer require --dev kitloong/laravel-migrations-generator
+
+2: generamos los modelos, si nos hace la pregunta le decimos que no 
+::comando-> php artisan migrate:generate
+
+
+--------------------- generador de modelos ---------------------------------
+link: https://github.com/reliese/laravel
+link: yt-> https://www.youtube.com/watch?v=cbn1VlmOOvA
+
+1:instalamos la libreria
+::comando-> composer require reliese/laravel --dev
+
+2:Agregue el models.phparchivo de configuración
+ a su configdirectorio y borre el caché de configuración:
+::comando-> php artisan vendor:publish --tag=reliese-models
+
+(opcional) 2.1: Actualicemos nuestro caché de configuración por si acaso
+::comando-> php artisan config:clear
+
+3:traemos todos los modelos y su configuracion
+::comando-> php artisan code:models
+
+
+--------------eloquent ---------------------
+https://laravel.com/docs/10.x/eloquent
+https://laravel.com/docs/10.x/migrations
+https://laravel.com/docs/10.x/eloquent-relationships
+https://laravel.com/docs/10.x/queries
